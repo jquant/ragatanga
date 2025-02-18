@@ -40,3 +40,4 @@ dados_pratique_typesense/
 .coverage
 htmlcov/
 .pytest_cache/
+dados_pratique_typesense/schema/*.json
