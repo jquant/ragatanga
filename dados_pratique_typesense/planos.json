@@ -1,0 +1,159 @@
+[
+  {
+    "id": "plano_plus",
+    "name": "Plano Plus",
+    "recurrence": "Mensal",
+    "price": 129.9,
+    "pricing_detail": "Ingleses/Navegantes: R$149,90; Premium Grupo A (Trindade, Abrahão Caram, Chapecó, Florianópolis): R$149,90; Premium Grupo B (Pedra Branca, Meia Praia-Itapema, Itacorubi, Pato Branco II): R$179,90; Jurere: R$199,90",
+    "comment": "Acesso livre a todas as unidades, exceto: Funcionários, Centro de Florianópolis, Itapema, Pedra Branca, Trindade, Itacorubi, Pato Branco Centro e Chapecó.",
+    "benefits": ["Saver Club", "Metodologia Exclusiva", "Aplicativo Exclusivo"]
+  },
+  {
+    "id": "plano_combo_saude",
+    "name": "Plano Combo da Saúde",
+    "recurrence": "Mensal",
+    "price": 149.9,
+    "pricing_detail": "Standard: R$149,90/month; Exceptions: Ingleses/Navegantes: R$179,90/month; Premium Grupo A: R$179,90/month; Premium Grupo B: R$199,90/month; Jurere: R$239,90/month",
+    "comment": "Mesmo acesso do Plano Plus, acrescido de Acompanhamento Nutricional e Plano Alimentar Personalizado.",
+    "benefits": [
+      "Saver Club",
+      "Metodologia Exclusiva",
+      "Aplicativo Exclusivo",
+      "Exame de Bioimpedância",
+      "Espaço Performance",
+      "Espaço Luxo",
+      "Treino e Atendimento Superior",
+      "Acompanhamento Nutricional",
+      "Plano Alimentar Personalizado"
+    ]
+  },
+  {
+    "id": "plano_prime",
+    "name": "Plano Prime",
+    "recurrence": "Mensal",
+    "price": 199.9,
+    "pricing_detail": "Base: R$199,90/month (Mangabeiras, Ouro Preto, Lagoa Santa, Pato Branco II); Exceptions: Itacorubi: R$249,90; Funcionários: R$219,90; São Bento: R$229,90; Campinas: R$239,90",
+    "comment": "Acesso livre a todas as unidades Slim com experiência premium.",
+    "benefits": [
+      "Saver Club",
+      "Metodologia Exclusiva",
+      "Aplicativo Exclusivo",
+      "Exame de Bioimpedância",
+      "Espaço Luxo",
+      "Treino e Atendimento Superior"
+    ]
+  },
+  {
+    "id": "plano_combo_prime",
+    "name": "Plano Combo Prime",
+    "recurrence": "Mensal",
+    "price": 219.9,
+    "pricing_detail": "Base: R$219,90/month (Mangabeiras, Ouro Preto, Lagoa Santa, Pato Branco II); Exceptions: Itacorubi: R$269,90; Funcionários: R$239,90; São Bento: R$249,90; Campinas: R$259,90",
+    "comment": "Todos os benefícios do Plano Prime, acrescidos de Acompanhamento Nutricional e Plano Alimentar Personalizado.",
+    "benefits": [
+      "Saver Club",
+      "Metodologia Exclusiva",
+      "Aplicativo Exclusivo",
+      "Exame de Bioimpedância",
+      "Espaço Luxo",
+      "Treino e Atendimento Superior",
+      "Acompanhamento Nutricional",
+      "Plano Alimentar Personalizado"
+    ]
+  },
+  {
+    "id": "plano_premium",
+    "name": "Plano Premium",
+    "recurrence": "Mensal",
+    "price": 149.9,
+    "pricing_detail": "",
+    "comment": "Acesso livre a todas as unidades, exceto às Unidades Prime e Espaço Prime. Benefícios: Saver Club, Metodologia Exclusiva, Aplicativo Exclusivo, Exame de Bioimpedância e Espaço Performance.",
+    "benefits": [
+      "Saver Club",
+      "Metodologia Exclusiva",
+      "Aplicativo Exclusivo",
+      "Exame de Bioimpedância",
+      "Espaço Performance"
+    ]
+  },
+  {
+    "id": "plano_combo_premium",
+    "name": "Plano Combo Premium",
+    "recurrence": "Mensal",
+    "price": 179.9,
+    "pricing_detail": "For Unidade Premium: Group A: Combo R$179,90; Group B: Combo R$199,90; Jurere: Combo R$239,90.",
+    "comment": "Todos os benefícios do Plano Premium, acrescidos de Acompanhamento Nutricional e Plano Alimentar Personalizado.",
+    "benefits": [
+      "Saver Club",
+      "Metodologia Exclusiva",
+      "Aplicativo Exclusivo",
+      "Exame de Bioimpedância",
+      "Espaço Performance",
+      "Acompanhamento Nutricional",
+      "Plano Alimentar Personalizado"
+    ]
+  },
+  {
+    "id": "plano_mensal_comum",
+    "name": "Mensalidades Comuns",
+    "recurrence": "30 dias",
+    "price": 179.9,
+    "pricing_detail": "",
+    "comment": "Adesão presencial na unidade. Valores a partir de R$179,90, variando conforme a unidade.",
+    "benefits": []
+  },
+  {
+    "id": "plano_diaria",
+    "name": "Diária",
+    "recurrence": "Diária",
+    "price": 40.0,
+    "pricing_detail": "R$40,00 for Slim and Premium units; R$60,00 for Prime units",
+    "comment": "Valor: R$40,00 em Unidades Slim e Premium; R$60,00 em Unidades Prime.",
+    "benefits": []
+  },
+  {
+    "id": "plano_semanal",
+    "name": "Plano Semanal",
+    "recurrence": "Semanal",
+    "price": 99.9,
+    "pricing_detail": "7-day plan: R$99,90",
+    "comment": "Valor para treinar 7 dias: R$99,90.",
+    "benefits": []
+  },
+  {
+    "id": "plano_quinzenal",
+    "name": "Plano Quinzenal",
+    "recurrence": "Quinzenal",
+    "price": 119.9,
+    "pricing_detail": "15-day plan: R$119,90",
+    "comment": "Valor para treinar 15 dias: R$119,90.",
+    "benefits": []
+  },
+  {
+    "id": "assinatura_herois_saude",
+    "name": "Assinatura Heróis da Saúde",
+    "recurrence": "Mensal",
+    "price": 89.9,
+    "pricing_detail": "",
+    "comment": "Destinada a profissionais de saúde (COREN, CRM, CREFITO). Valor: R$89,90 mensais, isenção de matrícula, acesso a todas as unidades (exceto Funcionários e Espaço Prime) e inclusão de todas as modalidades secas e plataforma de treino.",
+    "benefits": ["Plataforma de Treino"]
+  },
+  {
+    "id": "assinatura_seguranca_publica",
+    "name": "Assinatura Segurança Pública",
+    "recurrence": "Mensal",
+    "price": 89.9,
+    "pricing_detail": "",
+    "comment": "Destinada a profissionais da segurança pública (Militares, Polícia, Bombeiros, etc.). Valor: R$89,90 mensais, isenção de matrícula, acesso a todas as unidades (exceto Funcionários e Espaço Prime).",
+    "benefits": []
+  },
+  {
+    "id": "plano_family",
+    "name": "Plano Family",
+    "recurrence": "Mensal",
+    "price": 199.9,
+    "pricing_detail": "",
+    "comment": "Valor de R$199,90 mensais inclui Bike Spinning em casa + Acesso PREMIUM (exceto Primes/Espaço Prime). Familiar adicional R$49,90 mensais, matrícula R$99,90.",
+    "benefits": []
+  }
+]

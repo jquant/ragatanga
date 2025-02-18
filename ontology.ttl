@@ -1,0 +1,3227 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://www.semanticweb.org/ontologies/pratique-fitness/> .
+
+###############################################################################
+## Ontology Declaration - Fix invalid URIs
+###############################################################################
+<http://www.semanticweb.org/ontologies/pratique-fitness/> rdf:type owl:Ontology ;
+    rdfs:label "Pratique Fitness Full Ontology" ;
+    owl:versionInfo "2.6" ;
+    owl:versionIRI <http://www.semanticweb.org/ontologies/pratique-fitness/2.6> .
+
+###############################################################################
+## Classes
+###############################################################################
+# Note: After reviewing the class hierarchy, no circular inheritance issues were found.
+# Base classes should be defined first
+:Modalidade rdf:type owl:Class ;
+    rdfs:label "Modalidade" ;
+    rdfs:comment "Atividades e modalidades oferecidas (ex.: Musculação, Dança, Natação, etc.)." .
+
+# Then subclasses
+:PoolActivity rdf:type owl:Class ;
+    rdfs:subClassOf :Modalidade ;  # This is the correct way to define inheritance
+    rdfs:label "Atividade Aquática" ;
+    rdfs:comment "Modalidades relacionadas ao uso da piscina." .
+
+:Unidade rdf:type owl:Class ;
+    rdfs:label "Unidade" ;
+    rdfs:comment "Uma unidade física da Pratique Fitness." .
+
+:UnidadeTipo rdf:type owl:Class ;
+    rdfs:label "Tipo de Unidade" ;
+    rdfs:comment "Classifica as unidades em: Slim, Premium e Prime/ Espaço Prime." .
+
+:Plano rdf:type owl:Class ;
+    rdfs:label "Plano / Assinatura" ;
+    rdfs:comment "Planos e assinaturas disponíveis para clientes." .
+
+:Benefit rdf:type owl:Class ;
+    rdfs:label "Benefício" ;
+    rdfs:comment "Benefícios e serviços que integram os planos." .
+
+:PaymentMethod rdf:type owl:Class ;
+    rdfs:label "Forma de Pagamento" ;
+    rdfs:comment "Métodos de pagamento (cartão de crédito, PIX, etc.)." .
+
+:PratiqueNutriService rdf:type owl:Class ;
+    rdfs:label "Serviço Pratique Nutri" ;
+    rdfs:comment "Serviço de acompanhamento nutricional, via app Dietbox." .
+
+:ModalidadeType rdf:type owl:Class ;
+    rdfs:label "Tipo de Modalidade" ;
+    rdfs:comment "Classifica as modalidades (ex.: Regular, Terceirizada)." .
+
+:Pool rdf:type owl:Class ;
+    rdfs:label "Piscina" ;
+    rdfs:comment "Informações sobre as piscinas disponíveis nas unidades." .
+
+:BikeRental rdf:type owl:Class ;
+    rdfs:label "Locação de Bike (PowerCycle)" ;
+    rdfs:comment "Serviço de locação de bikes, com planos e benefícios." .
+
+:PersonalExternoService rdf:type owl:Class ;
+    rdfs:label "Serviço de Personal Externo" ;
+    rdfs:comment "Programa para personal trainers atuarem nas unidades." .
+
+:PersonalClassService rdf:type owl:Class ;
+    rdfs:label "Serviço de Personal Class" ;
+    rdfs:comment "Programa de aulas personalizadas via créditos." .
+
+:JumperFitService rdf:type owl:Class ;
+    rdfs:label "Serviço Jumper Fit" ;
+    rdfs:comment "Recreação esportiva com trampolins (para todas as idades)." .
+
+:ExameBioimpedancia rdf:type owl:Class ;
+    rdfs:label "Exame de Bioimpedância" ;
+    rdfs:comment "Exame para avaliar composição corporal (avulso ou incluso em planos)." .
+
+:History rdf:type owl:Class ;
+    rdfs:label "História" ;
+    rdfs:comment "Histórico e informações sobre a evolução da Pratique Fitness." .
+
+###############################################################################
+## Additional Classes for Support, Age Policy, etc.
+###############################################################################
+:GeneralSupport rdf:type owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:label "Suporte Geral" ;
+    rdfs:comment "Canal para informações e dúvidas diversas." .
+
+:AgePolicy rdf:type owl:Class ;
+    rdfs:label "Política de Idade" ;
+    rdfs:comment "Regras para menores de idade e condições de ingresso." .
+
+:TreatmentType rdf:type owl:Class ;
+    rdfs:label "Tipo de Tratamento" .
+
+:PoolSchedule rdf:type owl:Class ;
+    rdfs:label "Horário da Piscina" .
+
+###############################################################################
+## Object Properties
+###############################################################################
+:hasType rdf:type owl:FunctionalObjectProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range :UnidadeTipo ;
+    rdfs:label "tem tipo" ;
+    rdfs:comment "Relaciona uma unidade ao seu tipo (Slim, Premium, Prime)." .
+
+:hasPlan rdf:type owl:ObjectProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range :Plano ;
+    rdfs:label "tem plano" ;
+    rdfs:comment "Indica que a unidade oferece determinado plano." ;
+    owl:inverseOf :availableIn .
+
+:availableIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range :Unidade ;
+    rdfs:label "disponível em" ;
+    rdfs:comment "Indica as unidades onde um plano está disponível." ;
+    owl:inverseOf :hasPlan .
+
+:includesBenefit rdf:type owl:AsymmetricObjectProperty,
+                          owl:IrreflexiveObjectProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range :Benefit ;
+    rdfs:label "inclui benefício" ;
+    rdfs:comment "Relaciona um plano aos seus benefícios." .
+
+:isBenefitOf rdf:type owl:ObjectProperty ;
+    rdfs:domain :Benefit ;
+    rdfs:range :Plano ;
+    rdfs:label "é benefício de" .
+
+:requiresPaymentMethod rdf:type owl:ObjectProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range :PaymentMethod ;
+    rdfs:label "requer forma de pagamento" .
+
+:isIncludedIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :PratiqueNutriService ;
+    rdfs:range :Plano ;
+    rdfs:label "está incluído em" .
+
+:offeredAt rdf:type owl:ObjectProperty ;
+    rdfs:domain :Modalidade ;
+    rdfs:range :Unidade ;
+    rdfs:label "oferecido em" ;
+    rdfs:comment "Indica em quais unidades a modalidade é oferecida." .
+
+:hasModalityType rdf:type owl:ObjectProperty ;
+    rdfs:domain :Modalidade ;
+    rdfs:range :ModalidadeType ;
+    rdfs:label "tem tipo de modalidade" ;
+    rdfs:comment "Relaciona uma modalidade ao seu tipo (ex.: Regular, Terceirizada)." .
+
+:hasPool rdf:type owl:AsymmetricObjectProperty,
+                 owl:IrreflexiveObjectProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range :Pool ;
+    rdfs:label "possui piscina" ;
+    rdfs:comment "Indica que a unidade possui uma ou mais piscinas." .
+
+:isPoolOf rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :Unidade ;
+    rdfs:label "piscina da unidade" .
+
+:hasTreatment rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :TreatmentType ;
+    rdfs:label "tipo de tratamento" .
+
+:supportsActivity rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :PoolActivity ;
+    rdfs:label "suporta atividade" ;
+    rdfs:comment "Indica quais atividades podem ser praticadas na piscina." .
+
+:hasRequirement rdf:type owl:ObjectProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range :PoolRequirement ;
+    rdfs:label "tem requisito" ;
+    rdfs:comment "Relaciona uma piscina (ou unidade) aos requisitos para seu uso." .
+
+:hasCancellationForm rdf:type owl:ObjectProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range rdfs:Resource ;
+    rdfs:label "formulário de cancelamento" .
+
+:operatesIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :PersonalExternoService ;
+    rdfs:range :Unidade ;
+    rdfs:label "opera em" ;
+    rdfs:comment "Unidades em que o Personal Externo pode atuar." .
+
+:notOfferedAt rdf:type owl:ObjectProperty ;
+    rdfs:domain :Modalidade ;
+    rdfs:range :Unidade ;
+    rdfs:label "não oferecido em" ;
+    rdfs:comment "Indica em quais unidades a modalidade NÃO é oferecida (exceções)." .
+
+###############################################################################
+## Datatype Properties
+###############################################################################
+:hasLink rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PratiqueNutriService ;
+    rdfs:range xsd:anyURI ;
+    rdfs:label "tem link" ;
+    rdfs:comment "Link para agendamento, consulta ou informações adicionais." .
+
+:hasAddress rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "possui endereço" .
+
+:hasCity rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "está na cidade" .
+
+:hasState rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "está no estado" .
+
+:hasWorkingHours rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "horário de funcionamento" .
+
+:hasPrice rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "tem preço" ;
+    rdfs:comment "Valor do plano em reais." .
+
+:hasRecurrence rdf:type owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:string ;
+    rdfs:label "tem recorrência" ;
+    rdfs:comment "Frequência do pagamento (ex.: Mensal, Semanal)." .
+
+:hasPricingDetail rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:string ;
+    rdfs:label "detalhes de precificação" ;
+    rdfs:comment "Informações detalhadas sobre a precificação, inclusive exceções por unidade." .
+
+:hasPaymentComment rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PaymentMethod ;
+    rdfs:range xsd:string ;
+    rdfs:label "comentário sobre pagamento" .
+
+:hasUnitException rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:string ;
+    rdfs:label "exceção de unidade" ;
+    rdfs:comment "Exceções de preço para determinadas unidades." .
+
+:hasContactNumber rdf:type owl:DatatypeProperty ;
+    rdfs:domain :GeneralSupport ;
+    rdfs:range xsd:string ;
+    rdfs:label "número de contato" .
+
+:hasContactChannel rdf:type owl:DatatypeProperty ;
+    rdfs:domain :GeneralSupport ;
+    rdfs:range xsd:string ;
+    rdfs:label "canal de contato" .
+
+:handlesInquiries rdf:type owl:DatatypeProperty ;
+    rdfs:domain :GeneralSupport ;
+    rdfs:range xsd:string ;
+    rdfs:label "assuntos atendidos" .
+
+:hasNoticePeriod rdf:type owl:DatatypeProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string ;
+    rdfs:label "período de aviso prévio" .
+
+:hasLockBonus rdf:type owl:DatatypeProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "bônus de trancamento" .
+
+:openingTime rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PoolSchedule ;
+    rdfs:range xsd:string ;
+    rdfs:label "horário de abertura" .
+
+:closingTime rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PoolSchedule ;
+    rdfs:range xsd:string ;
+    rdfs:label "horário de fechamento" .
+
+:hasAlternatePrice rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "tem preço alternativo" ;
+    rdfs:comment "Preço alternativo (ex.: diárias em unidades Prime) para um plano." .
+
+###############################################################################
+## New Datatype Property for Unit Pricing Detail
+###############################################################################
+:hasUnitPricingDetail rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "descrição de precificação da unidade" ;
+    rdfs:comment "Informações específicas de precificação para cada unidade." .
+
+:hasWidth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "largura da piscina" .
+
+:hasLength rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "comprimento da piscina" .
+
+:hasDepth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "profundidade media da piscina" .
+
+:hasShallowEndDepth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "profundidade da parte rasa" .
+
+:hasDeepEndDepth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "profundidade da parte funda" .
+
+:isCovered rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "cobertura da piscina" .
+
+:isHeated rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "piscina aquecida" .
+###############################################################################
+## Individuals – UnidadeTipo (disjoint)
+###############################################################################
+
+:Tipo_Slim rdf:type :UnidadeTipo ;
+    rdfs:label "Slim" ;
+    rdfs:comment "Ticket médio entre R$129,90 e R$149,90." .
+
+:Tipo_Premium rdf:type :UnidadeTipo ;
+    rdfs:label "Premium" ;
+    rdfs:comment "Unidades com acabamento e aparelhagem de alta qualidade." .
+
+:Tipo_Prime rdf:type :UnidadeTipo ;
+    rdfs:label "Prime / Espaço Prime" ;
+    rdfs:comment "Unidades com equipamentos superiores e atendimento premium." .
+
+:Tipo_Slim owl:disjointWith :Tipo_Premium .
+:Tipo_Slim owl:disjointWith :Tipo_Prime .
+:Tipo_Premium owl:disjointWith :Tipo_Prime .
+
+###############################################################################
+## PoolActivity Individuals
+###############################################################################
+
+:NatacaoBaby rdf:type :PoolActivity ;
+    rdfs:label "Natação Baby" .
+
+:NatacaoInfantil rdf:type :PoolActivity ;
+    rdfs:label "Natação Infantil" .
+
+:NatacaoAdulto rdf:type :PoolActivity ;
+    rdfs:label "Natação Adulto" .
+
+:Modalidade_Hidroginastica rdf:type :PoolActivity ;
+    rdfs:label "Hidroginástica" .
+
+###############################################################################
+## Individuals – Some Pool Treatments and Requirements
+###############################################################################
+
+:TreatmentOzone rdf:type :TreatmentType ;
+    rdfs:label "Ozônio" .
+
+:TreatmentChlorine rdf:type :TreatmentType ;
+    rdfs:label "Cloro" .
+
+:RequirementTouca rdf:type :PoolRequirement ;
+    rdfs:label "Touca" .
+
+:RequirementSunga rdf:type :PoolRequirement ;
+    rdfs:label "Sunga" .
+
+:RequirementMaio rdf:type :PoolRequirement ;
+    rdfs:label "Maiô" .
+
+:RequirementOculos rdf:type :PoolRequirement ;
+    rdfs:label "Óculos" .
+
+###############################################################################
+## Individuals – Payment Methods
+###############################################################################
+
+:PaymentMethod_CartaoCredito rdf:type :PaymentMethod ;
+    rdfs:label "Cartão de Crédito Recorrente" ;
+    rdfs:comment "Pagamento recorrente mensal sem comprometer o limite do cartão." .
+
+:PaymentMethod_PIX rdf:type :PaymentMethod ;
+    rdfs:label "PIX (para parcelas vencidas)" ;
+    rdfs:comment "Utilizado para pagamento de parcelas vencidas ou a vencer." .
+
+###############################################################################
+## Individuals – Benefits
+###############################################################################
+
+:Benefit_SaverClub rdf:type :Benefit ;
+    rdfs:label "Saver Club" ;
+    rdfs:comment "Descontos em mais de 30 mil estabelecimentos." .
+
+:Benefit_MetodologiaExclusiva rdf:type :Benefit ;
+    rdfs:label "Metodologia Exclusiva" ;
+    rdfs:comment "Treino adaptado às necessidades individuais." .
+
+:Benefit_AplicativoExclusivo rdf:type :Benefit ;
+    rdfs:label "Aplicativo Exclusivo" ;
+    rdfs:comment "Monitoramento 24 horas do progresso e feedback contínuo." .
+
+:Benefit_Bioimpedancia rdf:type :Benefit ;
+    rdfs:label "Exame de Bioimpedância" ;
+    rdfs:comment "Avaliação da composição corporal com evolução mensal." .
+
+:Benefit_EspacoLuxo rdf:type :Benefit ;
+    rdfs:label "Espaço Luxo" ;
+    rdfs:comment "Ambientes diferenciados e confortáveis." .
+
+:Benefit_TreinoAtendimentoSuperior rdf:type :Benefit ;
+    rdfs:label "Treino e Atendimento Superior" ;
+    rdfs:comment "Serviço de alta qualidade com acompanhamento especializado." .
+
+:Benefit_AcompanhamentoNutricional rdf:type :Benefit ;
+    rdfs:label "Acompanhamento Nutricional" ;
+    rdfs:comment "Consultas online com nutricionista esportivo." .
+
+:Benefit_PlanoAlimentarPersonalizado rdf:type :Benefit ;
+    rdfs:label "Plano Alimentar Personalizado" ;
+    rdfs:comment "Plano alimentar individualizado." .
+
+:Benefit_EspacoPerformance rdf:type :Benefit ;
+    rdfs:label "Espaço Performance" ;
+    rdfs:comment "Ambiente com infraestrutura de alta performance." .
+
+:Benefit_PlataformaTreino rdf:type :Benefit ;
+    rdfs:label "Plataforma/App de Treino" ;
+    rdfs:comment "Acesso à plataforma digital com treinos e monitoramento." .
+
+###############################################################################
+## Individuals – Pratique Nutri Service
+###############################################################################
+
+:PratiqueNutriService_Combo rdf:type :PratiqueNutriService ;
+    rdfs:label "Pratique Nutri (Incluso no Combo)" ;
+    rdfs:comment "Consulta via vídeo chamada; plano alimentar enviado em até 72h; consultas a cada 45 dias." ;
+    :hasLink <https://pratiquefitness.com.br/diagnose> .
+
+:PratiqueNutriService_Individual rdf:type :PratiqueNutriService ;
+    rdfs:label "Pratique Nutri (Avulso)" ;
+    rdfs:comment "Primeira consulta: R$89,90; Consultas subsequentes: R$19,90 mensais." .
+
+###############################################################################
+## Individuals – Bike Rental
+###############################################################################
+
+:BikeRental_Semestral rdf:type :BikeRental ;
+    rdfs:label "PowerCycle - Plano Semestral" ;
+    rdfs:comment "6 parcelas de R$149,90; manutenção e frete inclusos." .
+
+:BikeRental_Quadrimestral rdf:type :BikeRental ;
+    rdfs:label "PowerCycle - Plano Quadrimestral" ;
+    rdfs:comment "4 parcelas de R$169,90; inclui consultas a cada 45 dias e acompanhamento nutricional." .
+
+:BikeRental_Trimestral rdf:type :BikeRental ;
+    rdfs:label "PowerCycle - Plano Trimestral" ;
+    rdfs:comment "3 parcelas de R$149,90; manutenção e frete inclusos." .
+
+:BikeRental_Description rdf:type :BikeRental ;
+    rdfs:label "Bike Spinning Profissional Total Health" ;
+    rdfs:comment "Dimensões: 55 x 121 x 107 cm; Peso: 60 kg; Carga máxima: 150 kg; Roda de inércia: 25kg; sem pedal de clip." .
+
+###############################################################################
+## Individuals – Personal Externo Service
+###############################################################################
+
+:PersonalExterno_Geral rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Geral" ;
+    rdfs:comment "Mensalidade de R$99,90. Benefícios: Assistência Saúde, Camisa Personalizada, Saver Club, Clube de Afiliados e Pagamento Recorrente." ;
+    :hasPrice "99.90"^^xsd:decimal ;
+    :hasRecurrence "Mensal" ;
+    :notOfferedAt :unidade_funcionarios, :unidade_itabira, :unidade_prime .
+
+:PersonalExterno_Prime rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Unidades Prime" ;
+    rdfs:comment "Mensalidade de R$109,90. Disponível nas unidades Prime, exceto Funcionários." ;
+    :hasPrice "109.90"^^xsd:decimal ;
+    :hasRecurrence "Mensal" ;
+    :notOfferedAt :unidade_funcionarios .
+
+:PersonalExterno_Itabira rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Unidade Itabira" ;
+    rdfs:comment "Mensalidade de R$199,90. Exclusivo para a Unidade Itabira." ;
+    :hasPrice "199.90"^^xsd:decimal ;
+    :hasRecurrence "Mensal" ;
+    :offeredAt :unidade_itabira .
+
+###############################################################################
+## Individuals – Personal Class Service
+###############################################################################
+
+:PersonalClass_Min8Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 8 Créditos" ;
+    rdfs:comment "Duração: 1 mês; Valor: R$237,60." ;
+    :hasPrice "237.60"^^xsd:decimal ;
+    :hasCredits "8"^^xsd:integer ;
+    :hasDuration "1"^^xsd:integer ;
+    :hasRecurrence "Mensal" ;
+    :offeredAt :unidade_fernao_dias,
+                :unidade_guarani,
+                :unidade_industrial,
+                :unidade_jaragua,
+                :unidade_pampulha,
+                :unidade_sagrada_familia,
+                :unidade_santa_efigenia,
+                :unidade_eldorado,
+                :unidade_serrano,
+                :unidade_santa_ines_2,
+                :unidade_nova_floresta,
+                :unidade_mart_minas,
+                :unidade_tirol,
+                :unidade_betim_sao_caetano,
+                :unidade_betim_decamao,
+                :unidade_pedra_branca .
+
+:PersonalClass_Min12Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 12 Créditos" ;
+    rdfs:comment "Duração: 1 mês; Valor: R$298,60." ;
+    :hasPrice "298.60"^^xsd:decimal ;
+    :hasCredits "12"^^xsd:integer ;
+    :hasDuration "1"^^xsd:integer ;
+    :hasRecurrence "Mensal" ;
+    :offeredAt :unidade_fernao_dias,
+                :unidade_guarani,
+                :unidade_industrial,
+                :unidade_jaragua,
+                :unidade_pampulha,
+                :unidade_sagrada_familia,
+                :unidade_santa_efigenia,
+                :unidade_eldorado,
+                :unidade_serrano,
+                :unidade_santa_ines_2,
+                :unidade_nova_floresta,
+                :unidade_mart_minas,
+                :unidade_tirol,
+                :unidade_betim_sao_caetano,
+                :unidade_betim_decamao,
+                :unidade_pedra_branca .
+
+:PersonalClass_20Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 20 Créditos" ;
+    rdfs:comment "Duração: 2 meses; Valor parcelado: R$231,00/mês." ;
+    :hasPrice "231.00"^^xsd:decimal ;
+    :hasCredits "20"^^xsd:integer ;
+    :hasDuration "2"^^xsd:integer ;
+    :hasRecurrence "Mensal" ;
+    :offeredAt :unidade_fernao_dias,
+                :unidade_guarani,
+                :unidade_industrial,
+                :unidade_jaragua,
+                :unidade_pampulha,
+                :unidade_sagrada_familia,
+                :unidade_santa_efigenia,
+                :unidade_eldorado,
+                :unidade_serrano,
+                :unidade_santa_ines_2,
+                :unidade_nova_floresta,
+                :unidade_mart_minas,
+                :unidade_tirol,
+                :unidade_betim_sao_caetano,
+                :unidade_betim_decamao,
+                :unidade_pedra_branca .
+
+:PersonalClass_30Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 30 Créditos" ;
+    rdfs:comment "Duração: 3 meses; Valor parcelado: R$209,00/mês." ;
+    :hasPrice "209.00"^^xsd:decimal ;
+    :hasCredits "30"^^xsd:integer ;
+    :hasDuration "3"^^xsd:integer ;
+    :hasRecurrence "Mensal" ;
+    :offeredAt :unidade_fernao_dias,
+                :unidade_guarani,
+                :unidade_industrial,
+                :unidade_jaragua,
+                :unidade_pampulha,
+                :unidade_sagrada_familia,
+                :unidade_santa_efigenia,
+                :unidade_eldorado,
+                :unidade_serrano,
+                :unidade_santa_ines_2,
+                :unidade_nova_floresta,
+                :unidade_mart_minas,
+                :unidade_tirol,
+                :unidade_betim_sao_caetano,
+                :unidade_betim_decamao,
+                :unidade_pedra_branca .
+
+:PersonalClass_36Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 36 Créditos" ;
+    rdfs:comment "Duração: 3 meses; Valor parcelado: R$299,00/mês." ;
+    :hasPrice "299.00"^^xsd:decimal ;
+    :hasCredits "36"^^xsd:integer ;
+    :hasDuration "3"^^xsd:integer ;
+    :hasRecurrence "Mensal" ;
+    :offeredAt :unidade_fernao_dias,
+                :unidade_guarani,
+                :unidade_industrial,
+                :unidade_jaragua,
+                :unidade_pampulha,
+                :unidade_sagrada_familia,
+                :unidade_santa_efigenia,
+                :unidade_eldorado,
+                :unidade_serrano,
+                :unidade_santa_ines_2,
+                :unidade_nova_floresta,
+                :unidade_mart_minas,
+                :unidade_tirol,
+                :unidade_betim_sao_caetano,
+                :unidade_betim_decamao,
+                :unidade_pedra_branca .
+
+###############################################################################
+## Individuals – Jumper Fit Service
+###############################################################################
+
+:JumperFit_UnidadePedraBranca rdf:type :JumperFitService ;
+    rdfs:label "Jumper Fit - Unidade Pedra Branca" ;
+    rdfs:comment "Para clientes: R$99,90 mensais; para não clientes: R$159,90; crédito avulso: R$59,90. Horários: Seg-Sex 10:00-22:00; Sáb 09:00-21:00; Dom 15:00-20:00." .
+
+###############################################################################
+## Individuals – Gympass/Wellub
+###############################################################################
+
+:Gympass_Wellub rdf:type owl:NamedIndividual ;
+    rdfs:label "Gympass/Wellub" ;
+    rdfs:comment "Integração: Check-in via App; acesso à musculação e aulas coletivas a partir do Plano Basic+; acesso às unidades Prime e Premium (exceto Itabira)." .
+
+###############################################################################
+## Individuals – Exame de Bioimpedância
+###############################################################################
+
+:ExameBioimpedancia_Avulso rdf:type :ExameBioimpedancia ;
+    rdfs:label "Exame de Bioimpedância Avulso" ;
+    rdfs:comment "Exame que avalia a composição corporal por R$99,90; agendamento via https://pratiquefitness.com.br/exame" ;
+    :hasLink <https://pratiquefitness.com.br/exame> .
+
+###############################################################################
+## Individuals – History
+###############################################################################
+
+:History_Practice rdf:type :History ;
+    rdfs:label "História da Academia Pratique" ;
+    rdfs:comment "A Pratique Fitness cresce aceleradamente, com metodologia exclusiva, cultura forte e expansão contínua, liderada por Harley Tadeu." .
+
+###############################################################################
+## Individuals – Suporte, Cancelamento e Políticas
+###############################################################################
+
+:GeneralSupportInstance rdf:type :GeneralSupport ;
+    rdfs:label "Suporte Geral" ;
+    rdfs:comment "Central de atendimento via WhatsApp: (31) 4141-1962. Atende dúvidas sobre planos, Power Cycle, Personal Class, Jumper Fit, etc." ;
+    :hasContactNumber "(31) 4141-1962" ;
+    :hasContactChannel "WhatsApp" ;
+    :handlesInquiries "Planos de natação; Power Cycle; Personal Class; Jumper Fit" .
+
+:AgePolicy_Instance rdf:type :AgePolicy ;
+    rdfs:label "Política de Idade" ;
+    rdfs:comment "Menores de 14 anos: Necessário atestado pediátrico e acompanhamento; a partir de 14, permitido treinar." .
+
+:CancelamentoSemMulta rdf:type owl:NamedIndividual ;
+    rdfs:label "Cancelamento e Trancamento" ;
+    rdfs:comment "Cancelamento realizado diretamente no balcão da unidade; sem multa, com aviso prévio de 7 dias, isenção de matrícula se retornar antes do fim do ano vigente; presente: exame de bioimpedância." ;
+    :hasCancellationForm <https://pratiquefitness.com.br/cancelamento/> ;
+    :hasNoticePeriod "7 dias" ;
+    :hasLockBonus "0.00"^^xsd:decimal .
+
+:InformacoesPagamento rdf:type owl:NamedIndividual ;
+    rdfs:label "Informações sobre Pagamento" ;
+    rdfs:comment "Pagamento recorrente via cartão de crédito (modelo Netflix). Não compromete o limite do cartão por 12 meses. PIX é aceito para parcelas vencidas ou a vencer." .
+
+
+###############################################################################
+## Individuals – Pools
+###############################################################################
+
+:Pool_SagradaFamilia rdf:type :Pool ;
+    rdfs:label "Piscina Sagrada Família" ;
+    :hasLength "20.0"^^xsd:decimal ;
+    :hasWidth "8.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca,:RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica .
+
+:Pool_Guarani_Musculacao rdf:type :Pool ;
+     rdfs:label "Piscina Guarani (CT Musculação)" ;
+    :hasLength "15"^^xsd:decimal;
+    :hasWidth "7"^^xsd:decimal;
+    :hasDepth "1.35"^^xsd:decimal;
+     :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+     :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+     :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+     :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_Guarani_Natacao rdf:type :Pool;
+    rdfs:label "Piscina Guarani (CT Natação)";
+    :hasLength "25"^^xsd:decimal;
+    :hasWidth "12.5"^^xsd:decimal;
+    :hasShallowEndDepth "1.4"^^xsd:decimal;
+    :hasDeepEndDepth "1.8"^^xsd:decimal;
+    :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica;
+    :isPoolOf :unidade_guarani.
+
+:Pool_CidadeNova rdf:type :Pool;
+    rdfs:label "Piscina Cidade Nova";
+    :hasLength "25"^^xsd:decimal;
+    :hasWidth "12.5"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+    :isCovered "false"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_Cachoeirinha rdf:type :Pool;
+    rdfs:label "Piscina Cachoeirinha";
+    :hasLength "15"^^xsd:decimal;
+    :hasWidth "8"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+     :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_SantaEfigenia rdf:type :Pool;
+     rdfs:label "Piscina Santa Efigênia";
+    :hasLength "20"^^xsd:decimal;
+    :hasWidth "12"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+    :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_SeteLagoas rdf:type :Pool;
+    rdfs:label "Piscina Sete Lagoas";
+    :hasLength "20"^^xsd:decimal;
+    :hasWidth "8"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+     :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+     :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+     :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+     :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_NovaFloresta rdf:type :Pool;
+     rdfs:label "Piscina Nova Floresta";
+    :hasLength "13"^^xsd:decimal;
+    :hasWidth "7"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+     :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_Industrial rdf:type :Pool;
+    rdfs:label "Piscina Industrial";
+    :hasLength "20"^^xsd:decimal;
+    :hasWidth "10"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+     :isCovered "false"^^xsd:boolean;
+     :isHeated "true"^^xsd:boolean;
+     :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+     :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+     :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_Cardoso rdf:type :Pool;
+     rdfs:label "Piscina Cardoso";
+    :hasLength "12"^^xsd:decimal;
+    :hasWidth "10"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+    :isCovered "true"^^xsd:boolean;
+     :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_SaoBento rdf:type :Pool;
+     rdfs:label "Piscina S\u00e3o Bento";
+    :hasLength "20"^^xsd:decimal;
+    :hasWidth "10"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+    :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+     :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+     :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+     :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_Goiania rdf:type :Pool;
+     rdfs:label "Piscina Goiânia";
+    :hasLength "12"^^xsd:decimal;
+    :hasWidth "8"^^xsd:decimal;
+    :hasDepth "1.4"^^xsd:decimal;
+    :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica.
+
+:Pool_Itabira rdf:type :Pool;
+    rdfs:label "Piscina Itabira";
+    :hasLength "15"^^xsd:decimal;
+    :hasWidth "13"^^xsd:decimal;
+    :hasDepth "1.3"^^xsd:decimal;
+    :isCovered "true"^^xsd:boolean;
+    :isHeated "true"^^xsd:boolean;
+     :hasTreatment :TreatmentOzone, :TreatmentChlorine;
+     :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Modalidade_Hidroginastica;
+    :isPoolOf :unidade_itabira.
+
+
+###############################################################################
+## Individuals – Unidades (116 total from unidades.json)
+## :hasType is mapped from "type": Slim->:Tipo_Slim, Premium->:Tipo_Premium, Prime->:Tipo_Prime
+## If has_swimming_facilities is true => :hasPool :Pool_SagradaFamilia
+###############################################################################
+
+:unidade_sao_geraldo rdf:type :Unidade ;
+    rdfs:label "São Geraldo" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rua Potomaio, 500 - São Geraldo, 31050-640" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_SagradaFamilia ;
+    :hasPool :Pool_CidadeNova ;
+    :hasUnitPricingDetail "" .
+
+:unidade_cidade_nova rdf:type :Unidade ;
+    rdfs:label "Xangrila" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Olavo Brasil Junior, 32 – Trevo Contagem - MG" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+     :hasPool :Pool_Guarani_Musculacao, :Pool_Guarani_Natacao ;
+    :hasUnitPricingDetail "" .
+
+:unidade_guarani rdf:type :Unidade ;
+    rdfs:label "Pratique Fitness Guarani" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Saramenha, 1530 - Guarani, Belo Horizonte - MG" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Segunda a Sexta: 05:30 às 23:00, Sábado: 08:00 às 13:00, Domingos e Feriados: 09:00 às 13:00" ;
+    rdfs:comment "A Pratique Fitness Guarani é a melhor opção para quem quer um espaço totalmente preparado para atividades físicas em diversas modalidades. Possuímos uma metodologia exclusiva, Powergym, que tornará sua experiência divertida e empolgante. Se você deseja ter mais saúde e qualidade de vida, o exercício físico promove uma melhora significativa na saúde física, mental e social. Localizada estrategicamente em Belo Horizonte, a unidade conta com a melhor estrutura, incluindo CT aquático, piscina e todo o leque de modalidades que só a Pratique oferece. Venha conhecer a unidade e garanta sua matrícula!" ;
+    :hasPhone "(31) 4141-1962" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_ingleses rdf:type :Unidade ;
+    rdfs:label "Ingleses" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Graciliano Manoel Gomes, 423 - Ingleses do Rio Vermelho, Florianópolis - SC, 88058-200" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "Pricing: Plus R$149,90; Combo Saúde R$179,90." ;
+    rdfs:comment "Valores de assinaturas diferenciados: Plus R$149,90 e Combo Saúde R$179,90." .
+
+:unidade_navegantes rdf:type :Unidade ;
+    rdfs:label "Navegantes" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Santos Dumont, 202 - Centro, Navegantes - SC, 88370-000" ;
+    :hasCity "Navegantes" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "Pricing: Plus R$149,90; Combo Saúde R$179,90." ;
+    rdfs:comment "Valores diferenciados como na unidade Ingleses. Unidade com metodologia exclusiva PowerGym, acesso a Happy Zone (aulas coletivas), Power Cycle (spinning), exame mensal de bioimpedância e programa Amigo de Treino aos sábados." ;
+    :hasPhone "(31) 4141-1962" .
+
+:unidade_neves rdf:type :Unidade ;
+    rdfs:label "Neves" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Not specified" ;
+    :hasCity "Not specified" ;
+    :hasState "Not specified" ;
+    :hasWorkingHours "Not specified" ;
+    rdfs:comment "Unidade Slim mentioned in the KB." ;
+    :hasUnitPricingDetail "" .
+
+:unidade_trindade rdf:type :Unidade ;
+    rdfs:label "Trindade" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Av. João de Deus Costa, 366 - Tres Barras, Contagem - MG, 32040-580" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_itacorubi rdf:type :Unidade ;
+    rdfs:label "Itacorubi" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "R. Eduardo Gonçalves d'Ávila, 130 - Itacorubi, Florianópolis - SC, 88034-496" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_funcionarios rdf:type :Unidade ;
+    rdfs:label "Funcionários (Unidade Prime)" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Carandaí, 41 - Funcionários, 30130-060" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_mangabeiras rdf:type :Unidade ;
+    rdfs:label "Mangabeiras" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. dos Bandeirantes, 1550 - Mangabeiras, 30210-420" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_ouro_preto2 rdf:type :Unidade ;
+    rdfs:label "Ouro Preto 2" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. Brasiléia, 50 - Ouro Preto, 31340-090" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_lagoa_santa rdf:type :Unidade ;
+    rdfs:label "Lagoa Santa" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Getúlio Vargas, 2440 - Joana Darc, 33400-000" ;
+    :hasCity "Lagoa Santa" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_joao_monlevade_loanda rdf:type :Unidade ;
+    rdfs:label "João Monlevade Loanda" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Armando Fajardo, 1801 - Loanda, 35930-379" ;
+    :hasCity "João Monlevade" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    rdfs:comment "Unidade Slim citada no KB." ;
+    :hasUnitPricingDetail "" .
+
+:unidade_itajai rdf:type :Unidade ;
+    rdfs:label "Itajaí" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. Heitor Liberato, 1928 - São João, 88304-101" ;
+    :hasCity "Itajaí" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_camelao rdf:type :Unidade ;
+    rdfs:label "Camelão" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. Pref. Reinoldo Alves, 41 - Passa Vinte, 88132-000" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    rdfs:comment "Palhoça/SC." ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pampulha rdf:type :Unidade ;
+    rdfs:label "Pampulha" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Dom Pedro I, 402 - Itapoã, 31550-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_itabira_gabiroba rdf:type :Unidade ;
+    rdfs:label "Itabira Gabiroba" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Dr. Pedro Guerra, 216 - Gabiroba (1ª Seção), 35900-410" ;
+    :hasCity "Itabira" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    rdfs:comment "Potential naming conflict with prime Itabira." ;
+    :hasUnitPricingDetail "" .
+
+:unidade_bela_vista rdf:type :Unidade ;
+    rdfs:label "Bela Vista" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Paulo Roberto Vidal, 55 - Caminho Novo, 88132-599" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_areias rdf:type :Unidade ;
+    rdfs:label "Areias" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. da Independência, 1470 - Areias, 88103-000" ;
+    :hasCity "São José" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_biguacu_centro rdf:type :Unidade ;
+    rdfs:label "Biguaçu Centro" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. Cel. Teixeira de Oliveira, 243 - Centro, Biguaçu - SC, 88160-130" ;
+    :hasCity "Biguaçu" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sertao_maruim rdf:type :Unidade ;
+    rdfs:label "Sertão do Maruim" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "SC-281, 2665 - Sertão do Maruim, 88106-115" ;
+    :hasCity "São José" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_flavio_marques rdf:type :Unidade ;
+    rdfs:label "Flávio Marques" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Menelick de Carvalho, 245 - Flávio Marques Lisboa, 30624-120" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sete_lagoas rdf:type :Unidade ;
+    rdfs:label "Sete Lagoas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Prof. Abeylard, 279 - Centro, Sete Lagoas, 35700-069" ;
+    :hasCity "Sete Lagoas" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_jardim_atlantico rdf:type :Unidade ;
+    rdfs:label "Jardim Atlântico" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Marinheiro Max Schramm - Jardim Atlântico, 88095" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    rdfs:comment "Florianópolis SC." ;
+    :hasUnitPricingDetail "" .
+
+:unidade_aririu rdf:type :Unidade ;
+    rdfs:label "Aririu" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Bom Jesus de Nazaré, 935 - Aririu, 88135-100" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_palmeiras rdf:type :Unidade ;
+    rdfs:label "Palmeiras" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Dom João VI, 1581 loja 3 e 4 - Palmeira, 33575-460" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pedro_leopoldo rdf:type :Unidade ;
+    rdfs:label "Pedro Leopoldo" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Cel. Juventino Dias, 95 - Centro, 33250-159" ;
+    :hasCity "Pedro Leopoldo" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_tirol rdf:type :Unidade ;
+    rdfs:label "Tirol" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Nélio Cerqueira, 1981 - Tirol, 30662-060" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasPool :Pool_Cardoso;
+    :hasUnitPricingDetail "" .
+
+:unidade_cardoso rdf:type :Unidade ;
+    rdfs:label "Alípio" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Abílio Machado, 750a - Alípio de Melo, 30830-482" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_Cachoeirinha ;
+    :hasUnitPricingDetail "" .
+
+:unidade_cachoeirinha rdf:type :Unidade ;
+    rdfs:label "Castelinho" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Damas Ribeiro, 361 - Eldorado, 32310-470" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_gloria rdf:type :Unidade ;
+    rdfs:label "Glória" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Brigadeiro Eduardo Gomes, 1239 - Gloria, Belo Horizonte - 30870-100" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_jardim_limoeiro rdf:type :Unidade ;
+    rdfs:label "Jardim Limoeiro" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rua Dr. Júlio Otaviano Ferreira, 151 - Cidade Nova, 31170-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_mart_minas rdf:type :Unidade ;
+    rdfs:label "Mart Minas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Diamante, 732 - São Joaquim, Contagem - 32113-000" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_goiania rdf:type :Unidade ;
+    rdfs:label "Goiânia" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Pomba, 649 - Goiânia, 31950-490" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_Goiania;
+    :hasUnitPricingDetail "" .
+
+:unidade_goiania rdf:type :Unidade ;
+    rdfs:label "Gávea II" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Araticum, 200 - Angicus, 33200-000" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_serrano rdf:type :Unidade ;
+    rdfs:label "Serrano" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Serrana, 970 - Serrano, Belo Horizonte - 30882-370" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_Industrial;
+    :hasUnitPricingDetail "" .
+
+:unidade_industrial rdf:type :Unidade ;
+    rdfs:label "Industrial" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Coronel Benjamim Guimarães, 838 - Industrial, 32230-000" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sao_sebastiao rdf:type :Unidade ;
+    rdfs:label "São Sebastião" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Marino Jorge dos Santos, 369 - São Sebastião, 88136-200" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_so_marcas rdf:type :Unidade ;
+    rdfs:label "Só Marcas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Cardeal Eugênio Pacelli, 1280 - Cidade Industrial, 32210-002" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_ceu_azul rdf:type :Unidade ;
+    rdfs:label "Céu Azul" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Antônio José dos Santos, 409 - Céu Azul, 31580-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Qui 05:30h-23:00h, Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_paqueta rdf:type :Unidade ;
+    rdfs:label "Paquetá" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Santa Terezinha, 231 - Paquetá, Belo Horizonte - MG, 31365-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_ibirite rdf:type :Unidade ;
+    rdfs:label "Ibirité" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Freitas de Oliveira, 285 - Alvorada, 32400-000" ;
+    :hasCity "Ibirité" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_itabira_esplanada rdf:type :Unidade ;
+    rdfs:label "Itabira Esplanada" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Mauro Ribeiro, 1010 - Esplanada da Estacao, Itabira - MG, 35900-564" ;
+    :hasCity "Itabira" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasPool :Pool_Itabira ;
+    :hasUnitPricingDetail "" .
+
+:unidade_campinas_sc rdf:type :Unidade ;
+    rdfs:label "Campinas (SC)" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Eugênio Raulino Koerich, 319 - Campinas, 88101-060" ;
+    :hasCity "São José" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santa_ines rdf:type :Unidade ;
+    rdfs:label "Santa Inês" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Waldyr Soeiro Emrich, 3350 - Loja 6 - Santa Helena, 30610-530" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santa_ines2 rdf:type :Unidade ;
+    rdfs:label "Santa Inês II" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. José Cândido da Silveira, 2790 - Santa Inês, 31080-154" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_betim_sao_caetano rdf:type :Unidade ;
+    rdfs:label "Betim São Caetano" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Tapajós, 1180 - São Caetano, 32073-740" ;
+    :hasCity "Betim" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_vale_jatoba rdf:type :Unidade ;
+    rdfs:label "Vale do Jatobá" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Senador Levindo Coelho, 1830 - Mangueiras, 30666-420" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_contagem_centro rdf:type :Unidade ;
+    rdfs:label "Contagem Centro" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Manoel Alves, 46 - Centro, 32041-400" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_justinopolis rdf:type :Unidade ;
+    rdfs:label "Justinópolis" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Denise Cristina da Rocha, 1001 - São Januário, 33900-001" ;
+    :hasCity "Ribeirão das Neves" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sao_benedito rdf:type :Unidade ;
+    rdfs:label "São Benedito" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Brasília, 832 - São Benedito, 33120-452" ;
+    :hasCity "Santa Luzia" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_floresta rdf:type :Unidade ;
+    rdfs:label "Floresta" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Flávio dos Santos, 325 - Floresta, 30015-150" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_ouro_preto_bh rdf:type :Unidade ;
+    rdfs:label "Ouro Preto (Belo Horizonte)" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Monteiro Lobato, 167 - Ouro Preto, 31310-530" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_ipiranga rdf:type :Unidade ;
+    rdfs:label "Ipiranga" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Eugênio Raulino Koerich, 319 - Campinas, 88101-060" ;
+    :hasCity "São José" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_castelo rdf:type :Unidade ;
+    rdfs:label "Castelo" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. dos Engenheiros, 167 - Castelo, Belo Horizonte - 30840-492" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_londrina rdf:type :Unidade ;
+    rdfs:label "Londrina" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Bernardo Guimarães, 280 - Londrina, 33115-650" ;
+    :hasCity "Santa Luzia" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_nazare rdf:type :Unidade ;
+    rdfs:label "Nazaré" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Candelária, 125 - Nazaré, 31990-010" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_morro_alto rdf:type :Unidade ;
+    rdfs:label "Morro Alto" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Um, 838 - Jequitibá, 33203-440" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santa_helena rdf:type :Unidade ;
+    rdfs:label "Santa Helena" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Waldyr Soeiro Emrich, 3350 - Loja 6 - Santa Helena, 30610-530" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santa_monica rdf:type :Unidade ;
+    rdfs:label "Santa Mônica" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Érico Veríssimo, 2345 - Santa Monica, Belo Horizonte - MG, 31525-365" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santo_amaro rdf:type :Unidade ;
+    rdfs:label "Santo Amaro" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Intendente Broering, 3117 - Vila Becker, Santo Amaro da Imperatriz - SC, 88140-000" ;
+    :hasCity "Santo Amaro da Imperatriz" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_forquilhas rdf:type :Unidade ;
+    rdfs:label "Forquilhas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Antônio Jovita Duarte, 5915 - Forquilhas, São José - SC, 88107-280" ;
+    :hasCity "São José" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_muquicaba rdf:type :Unidade ;
+    rdfs:label "Muquiçaba" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Ewerson de Abreu Sodré, 100 - Muquiçaba, Guarapari, ES 29215-010" ;
+    :hasCity "Guarapari" ;
+    :hasState "ES" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_saramenha rdf:type :Unidade ;
+    rdfs:label "Saramenha" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Saramenha, 1530 - Guarani, 31840-220" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_betim_decamao rdf:type :Unidade ;
+    rdfs:label "Betim Decamão" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Edmeia Matos Lazzarotti, 3238 - Decamao, 32603-055" ;
+    :hasCity "Betim" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_fernao_dias rdf:type :Unidade ;
+    rdfs:label "Fernão Dias" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Aiuruoca, 54 - Fernão Dias, 31910-130" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_fernao_dias2 rdf:type :Unidade ;
+    rdfs:label "Fernão Dias II" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Maria Ferreira da Silva, 440 - Fernão Dias, 31920-350" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pato_branco rdf:type :Unidade ;
+    rdfs:label "Pato Branco (Unidade Slim)" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Tupi, 1000 - Bortot, 85504-084" ;
+    :hasCity "Pato Branco" ;
+    :hasState "PR" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_cidade_nova rdf:type :Unidade ;
+    rdfs:label "Cidade Nova" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rua Dr. Júlio Otaviano Ferreira, 151 - Cidade Nova, 31170-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_CidadeNova ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sagrada_familia rdf:type :Unidade ;
+    rdfs:label "Sagrada Família" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Conselheiro Lafaiete, 1416 - Sagrada Família, 31035-560" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_SagradaFamilia ;
+    :hasUnitPricingDetail "" .
+
+:unidade_veneza rdf:type :Unidade ;
+    rdfs:label "Veneza" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Osvaldo Alves Araújo, 599 - Veneza, 33820-382" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_cabral rdf:type :Unidade ;
+    rdfs:label "Cabral" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Alameda dos Sabiás, 752 - Cabral, Contagem - 32146-024" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_rio_branco rdf:type :Unidade ;
+    rdfs:label "Rio Branco" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Bernarda Silvestre, 78 - Visc. do Rio Branco, 31535-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_forquilhinhas rdf:type :Unidade ;
+    rdfs:label "Forquilhinhas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Vereador Arthur Manoel Mariano, 1620 - Forquilhinhas, 88106-500" ;
+    :hasCity "Forquilhinhas" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_cardoso rdf:type :Unidade ;
+    rdfs:label "Cardoso" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Barão de Monte Alto, 911 - Cardoso, 30626-480" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sao_gabriel rdf:type :Unidade ;
+    rdfs:label "São Gabriel" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Anapurus, 49 - São Gabriel, 31980-210" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_para_de_minas rdf:type :Unidade ;
+    rdfs:label "Pará de Minas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Ricardo Marinho, 650 - São Cristovao, 35660-398" ;
+    :hasCity "Pará de Minas" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_prado rdf:type :Unidade ;
+    rdfs:label "Prado" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Francisco Sá, n°197 - Prado, 30410-060" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_matozinhos rdf:type :Unidade ;
+    rdfs:label "Matozinhos" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Oito de Dezembro, 18 - Centro, Matozinhos, 35720-000" ;
+    :hasCity "Matozinhos" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santa_efigenia rdf:type :Unidade ;
+    rdfs:label "Santa Efigênia" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Mem de Sá, 271 - Santa Efigênia, 30260-270" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_SantaEfigenia ;
+    :hasUnitPricingDetail "" .
+
+:unidade_lagoa_bh rdf:type :Unidade ;
+    rdfs:label "Lagoa (BH)" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. dos Menezes, 249 - Lagoa, 31610-090" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_eldorado rdf:type :Unidade ;
+    rdfs:label "Eldorado" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rua Mario Vital, 168 - Eldorado, Contagem - 32315160" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_tres_barras rdf:type :Unidade ;
+    rdfs:label "Três Barras" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. João de Deus Costa, 366 - Tres Barras, Contagem - MG, 32040-580" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_cachoeirinha rdf:type :Unidade ;
+    rdfs:label "Cachoeirinha" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Bernardo de Vasconcelos, 1193 - Cachoeirinha, 31150-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_Cachoeirinha ;
+    :hasUnitPricingDetail "" .
+
+:unidade_jaragua rdf:type :Unidade ;
+    rdfs:label "Jaraguá" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rua Izabel Bueno, 205 - Jaraguá, 31270-030" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_SantaEfigenia ;
+    :hasPool :Pool_SagradaFamilia ;
+    :hasUnitPricingDetail "" .
+
+:unidade_santa_maria rdf:type :Unidade ;
+    rdfs:label "Santa Maria" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Praça Santa Maria, 75 - Santa Maria, 32240-190" ;
+    :hasCity "Sete Lagoas" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_SeteLagoas ;
+    :hasUnitPricingDetail "" .
+
+:unidade_nova_floresta rdf:type :Unidade ;
+    rdfs:label "Nova Floresta" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Mossoró, 140 - Nova Floresta, 31140-330" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasPool :Pool_NovaFloresta ;
+    :hasUnitPricingDetail "" .
+
+:unidade_jardim_eldorado rdf:type :Unidade ;
+    rdfs:label "Jardim Eldorado" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Gentil Reinaldo Cordioli, 157 - Jardim Eldorado, 88133-500" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_brasil_atacadista2 rdf:type :Unidade ;
+    rdfs:label "Brasil Atacadista II" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rodovia Br-101 KM 215 7 - no Aririu, Palhoça - SC" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_vista_alegre rdf:type :Unidade ;
+    rdfs:label "Vista Alegre" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Paiva, 39 - Vista Alegre, 30512-460" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_heliopolis rdf:type :Unidade ;
+    rdfs:label "Heliópolis" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Maria Amélia Maia, 1191 - Heliópolis, 31741-171" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_shopping_contagem rdf:type :Unidade ;
+    rdfs:label "Shopping Contagem" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Severino Ballesteros, 850 - Cabral, Contagem - 32110-005" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 13:00h-18:00h, Dom 13:00h-18:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_joao_monlevade rdf:type :Unidade ;
+    rdfs:label "João Monlevade (Carneirinhos)" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Gentil Bicalho, 540 - Carneirinhos, 35930-478" ;
+    :hasCity "João Monlevade" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_francisco_beltrao rdf:type :Unidade ;
+    rdfs:label "Francisco Beltrão" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Antonina, 810 - Nossa Sra. Aparecida, 85601-580" ;
+    :hasCity "Francisco Beltrão" ;
+    :hasState "PR" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_camargos rdf:type :Unidade ;
+    rdfs:label "Camargos" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Gentil Portugal do Brasil, 355 - Camargos, Belo Horizonte - MG, 30520-540" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_centro_palhoca rdf:type :Unidade ;
+    rdfs:label "Centro de Palhoça" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Prefeito Nelson Martins, 1733 - Centro, 88131-280" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_oiapoque_contagem rdf:type :Unidade ;
+    rdfs:label "Oiapoque Contagem" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Mario Vital, 168 - Eldorado, Contagem - 32315160" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_biguacu rdf:type :Unidade ;
+    rdfs:label "Biguaçu" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Júlio Teodoro Martins, 3032 - Fundos, Biguaçu - SC, 88161-400" ;
+    :hasCity "Biguaçu" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_igarape rdf:type :Unidade ;
+    rdfs:label "Igarapé" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Gov. Valadares, 312 - Apto 101 - Centro, Igarapé - MG, 32900-000" ;
+    :hasCity "Igarapé" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_vilarinho rdf:type :Unidade ;
+    rdfs:label "Vilarinho" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Vilarinho, 5721 - Mantiqueira, 31615-250" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_tijucas rdf:type :Unidade ;
+    rdfs:label "Tijucas" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Paineiras, 470 - Universitario, Tijucas - SC, 88200-000" ;
+    :hasCity "Tijucas" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_riacho_das_pedras rdf:type :Unidade ;
+    rdfs:label "Riacho das Pedras" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Rua Rio Comprido, Parque, 1387 - Riacho das Pedras, Contagem - MG, 32280-070" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pagani rdf:type :Unidade ;
+    rdfs:label "Pagani Prime" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Av. Atílio Pedro Pagani, 1300 - Passa Vinte, Palhoça - SC" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-00:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    rdfs:comment """Unidade Pagani Prime
+Esta unidade conta com Setor Prime
+ESPAÇO DE LUXO: Andar exclusivo com limite de pessoas.
+EXAME DE BIOIMPEDÂNCIA GRÁTIS TODOS OS MESES: Para ajustar seu treino para o melhor resultado nos treinos.
+ESTRUTURA com equipamento PRIME e cadeira de massagem.
+TREINO E ATENDIMENTO DIFERENCIADOS: Conta com mais instrutores no setor da musculação e motodologia.""" ;
+    :hasUnitPricingDetail "" ;
+    :hasPhone "(31) 4141-1962" .
+
+:unidade_pagani2 rdf:type :Unidade ;
+    rdfs:label "Pagani 2" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "Av. Atílio Pedro Pagani, 1413 - 88132-149" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 04:30h-00:00h, Sáb 08:00h-20:00h, Dom 08:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_capoeiras rdf:type :Unidade ;
+    rdfs:label "Capoeiras" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. Joaquim Carneiro, 120 - Capoeiras, Florianópolis - SC, 88085-120" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_floramar rdf:type :Unidade ;
+    rdfs:label "Floramar" ;
+    :hasType :Tipo_Slim ;
+    :hasAddress "R. José Ferreira Magalhães, 403 - Floramar, Florianópolis - SC, 31742-093" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_meia_praia_itapema rdf:type :Unidade ;
+    rdfs:label "Meia Praia - Itapema" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Terceira Av., 503 - Meia Praia, Itapema - SC, 88220-000" ;
+    :hasCity "Itapema" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_chapeco rdf:type :Unidade ;
+    rdfs:label "Chapecó" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Av. Getúlio Dorneles Vargas, 951 - Centro, Chapecó - SC, 89805-184" ;
+    :hasCity "Chapecó" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pato_branco2 rdf:type :Unidade ;
+    rdfs:label "Pato Branco II" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "R. Caramuru, 596 - Centro, 85501-051" ;
+    :hasCity "Pato Branco" ;
+    :hasState "PR" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_florianopolis_centro rdf:type :Unidade ;
+    rdfs:label "Florianópolis (Centro)" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Rua Francisco Tolentino, 800 - Centro, 88010-200" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pedra_branca rdf:type :Unidade ;
+    rdfs:label "Pedra Branca" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Av. Pedra Branca, 744 - Cidade Universitária - Pedra Branca, 88137-270" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 08:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_jurere rdf:type :Unidade ;
+    rdfs:label "Jurere" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Rodovia Jornalista Maurício Sirotski Sobrinho, 5451 - Florianópolis - SC, 88053-410" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasUnitPricingDetail "Valores: Plus R$199,90, Combo Saúde R$239,90." ;
+    rdfs:comment "Valores: Plus R$199,90, Combo Saúde R$239,90." .
+
+:unidade_abrahao_caram rdf:type :Unidade ;
+    rdfs:label "Abrahão Caram" ;
+    :hasType :Tipo_Premium ;
+    :hasAddress "Av. Antônio Abrahão Caram, 118 - São José, Belo Horizonte - MG, 31275-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 08:00h-20:00h" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_itabira rdf:type :Unidade ;
+    rdfs:label "Itabira" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "Av. Mauro Ribeiro, 1010 - Esplanada da Estacao, Itabira - MG, 35900-564" ;
+    :hasCity "Itabira" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_pato_branco_centro rdf:type :Unidade ;
+    rdfs:label "Pato Branco Centro" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. Caramuru, 596 - Centro, 85501-051" ;
+    :hasCity "Pato Branco" ;
+    :hasState "PR" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasUnitPricingDetail "" .
+
+:unidade_sao_bento rdf:type :Unidade ;
+    rdfs:label "São Bento" ;
+    :hasType :Tipo_Prime ;
+    :hasAddress "R. Michel Jeha, 178 - São Bento, Belo Horizonte - MG" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasUnitPricingDetail "" ;
+    :hasPool :Pool_SaoBento ;
+    :hasPhone "(31) 4141-1962" ;
+    :hasFeatures "Setor Prime", "CT aquático" ;
+    rdfs:comment "A Pratique Fitness São Bento é a melhor opção para quem quer um espaço totalmente preparado para atividades físicas em diversas modalidades. Possuímos uma metodologia exclusiva, Powergym, que irá tornar sua experiência divertida e empolgante. Conta com Setor Prime com andar exclusivo, exame de bioimpedância mensal grátis, equipamentos Prime, cadeira de massagem e atendimento diferenciado. Também possui CT aquático com piscina para exercícios aquáticos." .
+
+###############################################################################
+## Individuals – Planos e Unidades Relations
+###############################################################################
+
+:Plano_Plus :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Plano_ComboSaude :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Plano_Prime :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Plano_ComboPrime :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+
+:Plano_Premium :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Plano_ComboPremium :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Assinatura_HeroisDaSaude :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Assinatura_SegurancaPublica :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_igarape,
+    :unidade_vilarinho,
+    :unidade_tijucas,
+    :unidade_riacho_das_pedras,
+    :unidade_pagani2,
+    :unidade_capoeiras,
+    :unidade_floramar,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+
+:Plano_Family :availableIn :unidade_sao_geraldo,
+    :unidade_xangrila,
+    :unidade_pagani,
+    :unidade_ingleses,
+    :unidade_navegantes,
+    :unidade_neves,
+    :unidade_trindade,
+    :unidade_itacorubi,
+    :unidade_mangabeiras,
+    :unidade_ouro_preto2,
+    :unidade_lagoa_santa,
+    :unidade_joao_monlevade_loanda,
+    :unidade_itajai,
+    :unidade_camelao,
+    :unidade_pampulha,
+    :unidade_itabira_gabiroba,
+    :unidade_bela_vista,
+    :unidade_areias,
+    :unidade_biguacu_centro,
+    :unidade_sertao_maruim,
+    :unidade_flavio_marques,
+    :unidade_sete_lagoas,
+    :unidade_jardim_atlantico,
+    :unidade_aririu,
+    :unidade_palmeiras,
+    :unidade_pedro_leopoldo,
+    :unidade_tirol,
+    :unidade_alipio,
+    :unidade_castelinho,
+    :unidade_gloria,
+    :unidade_jardim_limoeiro,
+    :unidade_mart_minas,
+    :unidade_goiania,
+    :unidade_gavea2,
+    :unidade_serrano,
+    :unidade_industrial,
+    :unidade_sao_sebastiao,
+    :unidade_so_marcas,
+    :unidade_ceu_azul,
+    :unidade_paqueta,
+    :unidade_ibirite,
+    :unidade_sao_bento,
+    :unidade_itabira_esplanada,
+    :unidade_campinas_sc,
+    :unidade_santa_ines,
+    :unidade_santa_ines2,
+    :unidade_betim_sao_caetano,
+    :unidade_vale_jatoba,
+    :unidade_contagem_centro,
+    :unidade_justinopolis,
+    :unidade_sao_benedito,
+    :unidade_floresta,
+    :unidade_ouro_preto_bh,
+    :unidade_ipiranga,
+    :unidade_castelo,
+    :unidade_londrina,
+    :unidade_nazare,
+    :unidade_morro_alto,
+    :unidade_santa_helena,
+    :unidade_santa_monica,
+    :unidade_santo_amaro,
+    :unidade_forquilhas,
+    :unidade_muquicaba,
+    :unidade_saramenha,
+    :unidade_betim_decamao,
+    :unidade_fernao_dias,
+    :unidade_fernao_dias2,
+    :unidade_pato_branco,
+    :unidade_cidade_nova,
+    :unidade_sagrada_familia,
+    :unidade_veneza,
+    :unidade_cabral,
+    :unidade_rio_branco,
+    :unidade_forquilhinhas,
+    :unidade_cardoso,
+    :unidade_sao_gabriel,
+    :unidade_para_de_minas,
+    :unidade_prado,
+    :unidade_matozinhos,
+    :unidade_santa_efigenia,
+    :unidade_lagoa_bh,
+    :unidade_eldorado,
+    :unidade_tres_barras,
+    :unidade_cachoeirinha,
+    :unidade_jaragua,
+    :unidade_santa_maria,
+    :unidade_nova_floresta,
+    :unidade_jardim_eldorado,
+    :unidade_brasil_atacadista2,
+    :unidade_vista_alegre,
+    :unidade_heliopolis,
+    :unidade_shopping_contagem,
+    :unidade_joao_monlevade,
+    :unidade_francisco_beltrao,
+    :unidade_camargos,
+    :unidade_centro_palhoca,
+    :unidade_oiapoque_contagem,
+    :unidade_biguacu,
+    :unidade_meia_praia_itapema,
+    :unidade_chapeco,
+    :unidade_pato_branco2,
+    :unidade_florianopolis_centro,
+    :unidade_pedra_branca,
+    :unidade_jurere,
+    :unidade_abrahao_caram,
+    :unidade_itabira,
+    :unidade_pato_branco_centro .
+    
+################################################################################
+### Individuals for Modalities
+################################################################################
+
+:Modalidade_Musculacao rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+
+:Modalidade_Danca rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+
+:Modalidade_Funcional rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    rdfs:label "Training (Funcional)";
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+
+:Modalidade_Jump rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+:Modalidade_Core rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    rdfs:label "Core (Abdominal/Mobilidade/Fortalecimento)";
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+
+:Modalidade_Cycle rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    rdfs:label "Cycle (Spinning)";
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+
+:Modalidade_Bumbum rdf:type :Modalidade;
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_sao_geraldo, :unidade_xangrila, :unidade_pagani, :unidade_ingleses, :unidade_navegantes, :unidade_neves, :unidade_trindade, :unidade_itacorubi, :unidade_funcionarios, :unidade_mangabeiras, :unidade_ouro_preto2, :unidade_lagoa_santa, :unidade_joao_monlevade_loanda, :unidade_itajai, :unidade_camelao, :unidade_pampulha, :unidade_itabira_gabiroba, :unidade_bela_vista, :unidade_areias, :unidade_biguacu_centro, :unidade_sertao_maruim, :unidade_flavio_marques, :unidade_sete_lagoas, :unidade_jardim_atlantico, :unidade_aririu, :unidade_palmeiras, :unidade_pedro_leopoldo, :unidade_tirol, :unidade_alipio, :unidade_castelinho, :unidade_gloria, :unidade_jardim_limoeiro, :unidade_mart_minas, :unidade_goiania, :unidade_gavea2, :unidade_serrano, :unidade_industrial, :unidade_sao_sebastiao, :unidade_so_marcas, :unidade_ceu_azul, :unidade_paqueta, :unidade_ibirite, :unidade_sao_bento, :unidade_itabira_esplanada, :unidade_campinas_sc, :unidade_santa_ines, :unidade_santa_ines2, :unidade_betim_sao_caetano, :unidade_vale_jatoba, :unidade_contagem_centro, :unidade_justinopolis, :unidade_sao_benedito, :unidade_floresta, :unidade_ouro_preto_bh, :unidade_ipiranga, :unidade_castelo, :unidade_londrina, :unidade_nazare, :unidade_morro_alto, :unidade_santa_helena, :unidade_santa_monica, :unidade_santo_amaro, :unidade_forquilhas, :unidade_muquicaba, :unidade_saramenha, :unidade_betim_decamao, :unidade_fernao_dias, :unidade_fernao_dias2, :unidade_pato_branco, :unidade_cidade_nova, :unidade_sagrada_familia, :unidade_veneza, :unidade_cabral, :unidade_rio_branco, :unidade_forquilhinhas, :unidade_cardoso, :unidade_sao_gabriel, :unidade_para_de_minas, :unidade_prado, :unidade_matozinhos, :unidade_santa_efigenia, :unidade_lagoa_bh, :unidade_eldorado, :unidade_tres_barras, :unidade_cachoeirinha, :unidade_jaragua, :unidade_santa_maria, :unidade_nova_floresta, :unidade_jardim_eldorado, :unidade_brasil_atacadista2, :unidade_vista_alegre, :unidade_heliopolis, :unidade_shopping_contagem, :unidade_joao_monlevade, :unidade_francisco_beltrao, :unidade_camargos, :unidade_centro_palhoca, :unidade_oiapoque_contagem, :unidade_biguacu, :unidade_igarape, :unidade_vilarinho, :unidade_tijucas, :unidade_riacho_das_pedras, :unidade_pagani2, :unidade_capoeiras, :unidade_floramar, :unidade_meia_praia_itapema, :unidade_chapeco, :unidade_pato_branco2, :unidade_florianopolis_centro, :unidade_pedra_branca, :unidade_jurere, :unidade_abrahao_caram, :unidade_itabira, :unidade_pato_branco_centro .
+
+:Modalidade_Natacao rdf:type :Modalidade, :PoolActivity;
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_guarani, :unidade_cachoeirinha, :unidade_sagrada_familia, :unidade_cidade_nova, :unidade_santa_efigenia, :unidade_sete_lagoas, :unidade_nova_floresta, :unidade_goiania, :unidade_cardoso, :unidade_industrial, :unidade_sao_bento, :unidade_itabira.
+
+:Modalidade_Hidroginastica rdf:type :Modalidade, :PoolActivity;
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_guarani, :unidade_cachoeirinha, :unidade_sagrada_familia, :unidade_cidade_nova, :unidade_santa_efigenia, :unidade_sete_lagoas, :unidade_nova_floresta, :unidade_goiania, :unidade_cardoso, :unidade_industrial, :unidade_sao_bento, :unidade_itabira.
+
+:Modalidade_MuayThai rdf:type :Modalidade;
+    rdfs:label "Muay Thai" ;
+    rdfs:comment "Arte marcial tailandesa com técnicas variadas." ;
+    :hasModalityType :Tipo_Regular ;
+    :offeredAt :unidade_fernao_dias, :unidade_lagoa_bh, :unidade_ouro_preto_bh, :unidade_pampulha, :unidade_santa_ines, :unidade_cachoeirinha.
+
+:Modalidade_MuayThaiTerceirizado rdf:type :Modalidade;
+    rdfs:label "Muay Thai Terceirizado" ;
+    rdfs:comment "Aulas oferecidas por instrutores terceirizados." ;
+    :hasModalityType :Tipo_Regular ;
+    :offeredAt :unidade_cidade_nova, :unidade_floresta, :unidade_heliopolis, :unidade_santa_monica, :unidade_nova_floresta.
+
+:Modalidade_Taekwondo rdf:type :Modalidade;
+    rdfs:label "Taekwondo" ;
+    rdfs:comment "Arte marcial coreana com ênfase em chutes acrobáticos." ;
+    :hasModalityType :Tipo_Regular ;
+    :offeredAt :unidade_cachoeirinha, :unidade_ceu_azul, :unidade_fernao_dias, :unidade_guarani, :unidade_sao_benedito, :unidade_pampulha, :unidade_nova_floresta, :unidade_heliopolis.
+
+:Modalidade_Pilates rdf:type :Modalidade;
+    rdfs:label "Pilates" ;
+    rdfs:comment "Método que melhora postura, flexibilidade e força." ;
+    :hasModalityType :Tipo_Regular ;
+    :offeredAt :unidade_cidade_nova, :unidade_nova_floresta, :unidade_heliopolis, :unidade_industrial, :unidade_mangabeiras, :unidade_pampulha, :unidade_sagrada_familia, :unidade_santa_efigenia, :unidade_sao_benedito, :unidade_sao_bento.
+
+:Modalidade_JumperFit rdf:type :Modalidade;
+    rdfs:label "Jumper Fit";
+    rdfs:comment "Modalidade Jumper Fit";
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_pedra_branca.
+
+:Modalidade_PersonalClass rdf:type :Modalidade;
+    rdfs:label "Personal Class";
+    rdfs:comment "Modalidade Personal Class";
+    :hasModalityType :Tipo_Regular;
+    :offeredAt :unidade_alipio, :unidade_cabral, :unidade_cachoeirinha, :unidade_castelo, :unidade_ceu_azul, :unidade_cidade_nova, :unidade_fernao_dias, :unidade_guarani, :unidade_industrial, :unidade_jaragua, :unidade_pampulha, :unidade_sagrada_familia, :unidade_santa_efigenia, :unidade_eldorado, :unidade_serrano, :unidade_santa_ines2, :unidade_nova_floresta, :unidade_mart_minas, :unidade_tirol, :unidade_betim_sao_caetano, :unidade_betim_decamao, :unidade_pedra_branca.
+
+
+:availableIn rdf:type owl:ObjectProperty ;
+    rdfs:label "available in" ;
+    rdfs:comment "Relates a plan or service to the units where it is available." .
+
+:notOfferedAt rdf:type owl:ObjectProperty ;
+    rdfs:label "not offered at" ;
+    rdfs:comment "Relates a plan or service to the units where it is not offered." .
+
+:availableAtService rdf:type owl:ObjectProperty ;
+    rdfs:label "available at service" ;
+    rdfs:comment "Relates a service to the units where it is available." .
+
+################################################################################
+## Inverse Properties
+###############################################################################
+
+
+
+################################################################################
+### Individuals for plans
+################################################################################
+
+:Plano_Plus rdf:type :Plano ;
+    rdfs:label "Plano Plus" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "129.90"^^xsd:decimal ;
+    :hasPricingDetail "Ingleses/Navegantes: R$149,90; Premium Grupo A (Trindade, Abrahão Caram, Chapecó, Florianópolis): R$149,90; Premium Grupo B (Pedra Branca, Meia Praia-Itapema, Itacorubi, Pato Branco II): R$179,90; Jurere: R$199,90" ;
+    rdfs:comment "Acesso livre a todas as unidades, exceto: Funcionários, Centro de Florianópolis, Itapema, Pedra Branca, Trindade, Itacorubi, Pato Branco Centro e Chapecó." ;
+    :includesBenefit :Benefit_SaverClub,
+                     :Benefit_MetodologiaExclusiva,
+                     :Benefit_AplicativoExclusivo,
+                     :Benefit_Bioimpedancia .
+
+:Plano_ComboSaude rdf:type :Plano ;
+    rdfs:label "Plano Combo da Saúde" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "149.90"^^xsd:decimal ;
+    :hasPricingDetail "Standard: R$149,90/month; Exceptions: Ingleses/Navegantes: R$179,90/month; Premium Grupo A: R$179,90/month; Premium Grupo B: R$199,90/month; Jurere: R$239,90/month" ;
+    rdfs:comment "Mesmo acesso do Plano Plus, acrescido de Acompanhamento Nutricional e Plano Alimentar Personalizado." ;
+    :includesBenefit :Benefit_SaverClub,
+                     :Benefit_MetodologiaExclusiva,
+                     :Benefit_AplicativoExclusivo,
+                     :Benefit_Bioimpedancia,
+                     :Benefit_AcompanhamentoNutricional,
+                     :Benefit_PlanoAlimentarPersonalizado .
+
+:Plano_Prime rdf:type :Plano ;
+    rdfs:label "Plano Prime" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "199.90"^^xsd:decimal ;
+    :hasPricingDetail "Base: R$199,90/month (Mangabeiras, Ouro Preto, Lagoa Santa, Pato Branco II); Exceptions: Itacorubi: R$249,90; Funcionários: R$219,90; São Bento: R$229,90; Campinas: R$239,90" ;
+    rdfs:comment "Acesso livre a todas as unidades Slim com experiência premium." ;
+    :includesBenefit :Benefit_SaverClub,
+                     :Benefit_MetodologiaExclusiva,
+                     :Benefit_AplicativoExclusivo,
+                     :Benefit_Bioimpedancia,
+                     :Benefit_EspacoLuxo,
+                     :Benefit_TreinoAtendimentoSuperior .
+
+:Plano_ComboPrime rdf:type :Plano ;
+    rdfs:label "Plano Combo Prime" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "219.90"^^xsd:decimal ;
+    :hasPricingDetail "Base: R$219,90/month (Mangabeiras, Ouro Preto, Lagoa Santa, Pato Branco II); Exceptions: Itacorubi: R$269,90; Funcionários: R$239,90; São Bento: R$249,90; Campinas: R$259,90" ;
+    rdfs:comment "Todos os benefícios do Plano Prime, acrescidos de Acompanhamento Nutricional e Plano Alimentar Personalizado." ;
+    :includesBenefit :Benefit_SaverClub,
+                     :Benefit_MetodologiaExclusiva,
+                     :Benefit_AplicativoExclusivo,
+                     :Benefit_Bioimpedancia,
+                     :Benefit_EspacoLuxo,
+                     :Benefit_TreinoAtendimentoSuperior,
+                     :Benefit_AcompanhamentoNutricional,
+                     :Benefit_PlanoAlimentarPersonalizado .
+
+:Plano_Premium rdf:type :Plano ;
+    rdfs:label "Plano Premium" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "149.90"^^xsd:decimal ;
+    :hasPricingDetail "" ;
+    rdfs:comment "Acesso livre a todas as unidades, exceto às Unidades Prime e Espaço Prime. Benefícios: Saver Club, Metodologia Exclusiva, Aplicativo Exclusivo, Exame de Bioimpedância e Espaço Performance." ;
+    :includesBenefit :Benefit_SaverClub,
+                     :Benefit_MetodologiaExclusiva,
+                     :Benefit_AplicativoExclusivo,
+                     :Benefit_Bioimpedancia,
+                     :Benefit_EspacoPerformance .
+
+:Plano_ComboPremium rdf:type :Plano ;
+    rdfs:label "Plano Combo Premium" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "179.90"^^xsd:decimal ;
+    :hasPricingDetail "For Unidade Premium: Group A: Combo R$179,90; Group B: Combo R$199,90; Jurere: Combo R$239,90." ;
+    rdfs:comment "Todos os benefícios do Plano Premium, acrescidos de Acompanhamento Nutricional e Plano Alimentar Personalizado." ;
+    :includesBenefit :Benefit_SaverClub,
+                     :Benefit_MetodologiaExclusiva,
+                     :Benefit_AplicativoExclusivo,
+                     :Benefit_Bioimpedancia,
+                     :Benefit_EspacoPerformance,
+                     :Benefit_AcompanhamentoNutricional,
+                     :Benefit_PlanoAlimentarPersonalizado .
+
+:Plano_MensalComum rdf:type :Plano ;
+    rdfs:label "Mensalidades Comuns" ;
+    :hasRecurrence "30 dias" ;
+    :hasPrice "179.90"^^xsd:decimal ;
+    :hasPricingDetail "" ;
+    rdfs:comment "Adesão presencial na unidade. Valores a partir de R$179,90, variando conforme a unidade." .
+
+:Plano_Diaria rdf:type :Plano ;
+    rdfs:label "Diária" ;
+    :hasRecurrence "Diária" ;
+    :hasPrice "40.0"^^xsd:decimal ;
+    :hasAlternatePrice "60.0"^^xsd:decimal ;
+    :hasPricingDetail "R$40,00 for Slim and Premium units; R$60,00 for Prime units" ;
+    rdfs:comment "Valor: R$40,00 em Unidades Slim e Premium; R$60,00 em Unidades Prime." .
+
+:Plano_Semanal rdf:type :Plano ;
+    rdfs:label "Plano Semanal" ;
+    :hasRecurrence "Semanal" ;
+    :hasPrice "99.90"^^xsd:decimal ;
+    :hasPricingDetail "7-day plan: R$99,90" ;
+    rdfs:comment "Valor para treinar 7 dias: R$99,90." .
+
+:Plano_Quinzenal rdf:type :Plano ;
+    rdfs:label "Plano Quinzenal" ;
+    :hasRecurrence "Quinzenal" ;
+    :hasPrice "119.90"^^xsd:decimal ;
+    :hasPricingDetail "15-day plan: R$119,90" ;
+    rdfs:comment "Valor para treinar 15 dias: R$119,90." .
+
+:Assinatura_HeroisDaSaude rdf:type :Plano ;
+    rdfs:label "Assinatura Heróis da Saúde" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "89.90"^^xsd:decimal ;
+    :hasPricingDetail "" ;
+    rdfs:comment "Destinada a profissionais de saúde (COREN, CRM, CREFITO). Valor: R$89,90 mensais, isenção de matrícula, acesso a todas as unidades (exceto Funcionários e Espaço Prime) e inclusão de todas as modalidades secas e plataforma de treino." ;
+    :includesBenefit :Benefit_PlataformaTreino .
+
+:Assinatura_SegurancaPublica rdf:type :Plano ;
+    rdfs:label "Assinatura Segurança Pública" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "89.90"^^xsd:decimal ;
+    :hasPricingDetail "" ;
+    rdfs:comment "Destinada a profissionais da segurança pública (Militares, Polícia, Bombeiros, etc.). Valor: R$89,90 mensais, isenção de matrícula, acesso a todas as unidades (exceto Funcionários e Espaço Prime)." .
+
+:Plano_Family rdf:type :Plano ;
+    rdfs:label "Plano Family" ;
+    :hasRecurrence "Mensal" ;
+    :hasPrice "199.90"^^xsd:decimal ;
+    :hasPricingDetail "" ;
+    rdfs:comment "Valor de R$199,90 mensais inclui Bike Spinning em casa + Acesso PREMIUM (exceto Primes/Espaço Prime). Familiar adicional R$49,90 mensais, matrícula R$99,90." .
+
+###############################################################################
+## Rules for Personal Externo Service
+###############################################################################
+
+
+
+:PersonalExterno_Prime rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Unidades Prime" ;
+    rdfs:comment "Mensalidade de R$109,90. Disponível nas unidades Prime, exceto Funcionários." ;
+    :hasPrice "109.90"^^xsd:decimal ;
+    :hasRecurrence "Mensal" ;
+    :notOfferedAt :unidade_funcionarios .
+
+###############################################################################
+## End of Ontology
+###############################################################################

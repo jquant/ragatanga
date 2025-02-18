@@ -1,0 +1,2223 @@
+@prefix : <http://www.semanticweb.org/pratique-fitness#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:OntologyDeclaration rdf:type owl:Ontology ;
+    rdfs:label "Pratique Fitness Ontology" .
+
+# CLASSES
+
+:Unidade rdf:type owl:Class ;
+    rdfs:label "Unidade" ;
+    rdfs:comment "Representa uma unidade física da Pratique Fitness." .
+
+:UnidadeTipo rdf:type owl:Class ;
+    rdfs:label "Tipo de Unidade" ;
+    rdfs:comment "Classifica as unidades em: Slim, Premium e Prime/ Espaço Prime." .
+
+:Plano rdf:type owl:Class ;
+    rdfs:label "Plano / Assinatura" ;
+    rdfs:comment "Modelos de assinatura e planos disponíveis para clientes." .
+
+:Benefit rdf:type owl:Class ;
+    rdfs:label "Benefício" ;
+    rdfs:comment "Vantagens e serviços incluídos em cada plano." .
+
+:PaymentMethod rdf:type owl:Class ;
+    rdfs:label "Forma de Pagamento" ;
+    rdfs:comment "Métodos de pagamento utilizados (ex.: cartão de crédito recorrente, PIX para parcelas vencidas)." .
+
+:PratiqueNutriService rdf:type owl:Class ;
+    rdfs:label "Serviço Pratique Nutri" ;
+    rdfs:comment "Serviço de acompanhamento nutricional, via app Dietbox, com consulta inicial e acompanhamento periódico." .
+
+:Modalidade rdf:type owl:Class ;
+    rdfs:label "Modalidade" ;
+    rdfs:comment "Atividades e modalidades oferecidas (musculação, dança, natação, etc.)." .
+
+:Pool rdf:type owl:Class ;
+    rdfs:label "Piscina" ;
+    rdfs:comment "Informações sobre as piscinas disponíveis nas unidades (dimensões, tratamento, horários, etc.)." .
+
+:BikeRental rdf:type owl:Class ;
+    rdfs:label "Locação de Bike (PowerCycle)" ;
+    rdfs:comment "Serviço de locação de bikes com planos (trimestral, quadrimestral, semestral) e benefícios inclusos." .
+
+:PersonalExternoService rdf:type owl:Class ;
+    rdfs:label "Serviço de Personal Externo" ;
+    rdfs:comment "Programa para personal trainers atenderem alunos nas unidades, com taxas diferenciadas (geral, Prime e Itabira)." .
+
+:PersonalClassService rdf:type owl:Class ;
+    rdfs:label "Serviço de Personal Class" ;
+    rdfs:comment "Programa de aulas personalizadas por meio de créditos, com avaliações mensais e agendamento via aplicativo." .
+
+:JumperFitService rdf:type owl:Class ;
+    rdfs:label "Serviço Jumper Fit" ;
+    rdfs:comment "Recreação esportiva com trampolins, destinada a crianças, jovens e adultos, com planos mensais ou créditos avulsos." .
+
+:ExameBioimpedancia rdf:type owl:Class ;
+    rdfs:label "Exame de Bioimpedância" ;
+    rdfs:comment "Exame que avalia a composição corporal (músculo, gordura, água, minerais) – incluso em vários planos ou disponível avulso por R$99,90." .
+
+:History rdf:type owl:Class ;
+    rdfs:label "História" ;
+    rdfs:comment "Informações históricas e dados sobre o crescimento e a cultura da Pratique Fitness." .
+
+# PROPRIEDADES DE OBJETO
+
+:hasType rdf:type owl:ObjectProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range :UnidadeTipo ;
+    rdfs:label "tem tipo" ;
+    rdfs:comment "Relaciona uma unidade ao seu tipo (ex.: Slim, Premium, Prime)." .
+
+:availableIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range :Unidade ;
+    rdfs:label "disponível em" ;
+    rdfs:comment "Indica as unidades em que um determinado plano está disponível." .
+
+:hasPlan rdf:type owl:ObjectProperty ;
+    owl:inverseOf :availableIn ;
+    rdfs:domain :Unidade ;
+    rdfs:range :Plano ;
+    rdfs:label "has plan" ;
+    rdfs:comment "Indica que a unidade possui o plano disponível." .
+
+:includesBenefit rdf:type owl:ObjectProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range :Benefit ;
+    rdfs:label "inclui benefício" ;
+    rdfs:comment "Relaciona um plano aos benefícios que ele oferece." .
+
+:isBenefitOf rdf:type owl:ObjectProperty ;
+    owl:inverseOf :includesBenefit ;
+    rdfs:domain :Benefit ;
+    rdfs:range :Plano ;
+    rdfs:label "is benefit of" ;
+    rdfs:comment "Indica que um benefício faz parte de um plano." .
+
+:requiresPaymentMethod rdf:type owl:ObjectProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range :PaymentMethod ;
+    rdfs:label "requer forma de pagamento" ;
+    rdfs:comment "Indica o método de pagamento utilizado para o plano." .
+
+:isIncludedIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :PratiqueNutriService ;
+    rdfs:range :Plano ;
+    rdfs:label "está incluído em" ;
+    rdfs:comment "Relaciona o serviço Nutri aos planos que o incluem." .
+
+:offeredAt rdf:type owl:ObjectProperty ;
+    rdfs:domain :Modalidade ;
+    rdfs:range :Unidade ;
+    rdfs:label "oferecido em" ;
+    rdfs:comment "Indica as unidades onde a modalidade é oferecida." .
+
+:associatedWith rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :Unidade ;
+    rdfs:label "associado a" ;
+    rdfs:comment "Relaciona uma piscina à unidade onde ela se encontra." .
+
+:hasPool rdf:type owl:ObjectProperty ;
+    owl:inverseOf :associatedWith ;
+    rdfs:domain :Unidade ;
+    rdfs:range :Pool ;
+    rdfs:label "has pool" ;
+    rdfs:comment "Indica que a unidade possui uma piscina associada." .
+
+:operatesIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :PersonalExternoService ;
+    rdfs:range :Unidade ;
+    rdfs:label "opera em" ;
+    rdfs:comment "Indica as unidades onde o serviço de Personal Externo pode ser utilizado." .
+
+:isOperatedBy rdf:type owl:ObjectProperty ;
+    owl:inverseOf :operatesIn ;
+    rdfs:domain :Unidade ;
+    rdfs:range :PersonalExternoService ;
+    rdfs:label "is operated by" ;
+    rdfs:comment "Indica que a unidade é operada pelo serviço de Personal Externo." .
+
+:availableAtService rdf:type owl:ObjectProperty ;
+    rdfs:domain :PersonalClassService ;
+    rdfs:range :Unidade ;
+    rdfs:label "disponível em" ;
+    rdfs:comment "Indica as unidades onde o serviço de Personal Class é oferecido." .
+
+:providesServiceAt rdf:type owl:ObjectProperty ;
+    owl:inverseOf :availableAtService ;
+    rdfs:domain :Unidade ;
+    rdfs:range :PersonalClassService ;
+    rdfs:label "provides service at" ;
+    rdfs:comment "Indica que a unidade oferece o serviço de Personal Class." .
+
+# PROPRIEDADES DE DADO
+
+:hasPrice rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "tem preço" ;
+    rdfs:comment "Valor do plano em reais." .
+
+:hasVariantPrice rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "tem preço variante" ;
+    rdfs:comment "Preço alternativo do plano para unidades específicas." .
+
+:hasUnitException rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:string ;
+    rdfs:label "tem exceção de unidade" ;
+    rdfs:comment "Especifica exceções de preços para unidades específicas." .
+
+:hasRecurrence rdf:type owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:string ;
+    rdfs:label "tem recorrência" ;
+    rdfs:comment "Frequência do pagamento (Mensal, Semanal, Diária, etc.)." .
+
+:hasBenefitDescription rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Benefit ;
+    rdfs:range xsd:string ;
+    rdfs:label "descrição do benefício" ;
+    rdfs:comment "Descrição detalhada do benefício oferecido." .
+
+:hasPaymentComment rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PaymentMethod ;
+    rdfs:range xsd:string ;
+    rdfs:label "comentário sobre pagamento" ;
+    rdfs:comment "Detalhes adicionais sobre a forma de pagamento." .
+
+:hasLink rdf:type owl:DatatypeProperty ;
+    rdfs:domain :ServiceUnion ;
+    rdfs:range xsd:anyURI ;
+    rdfs:label "tem link" ;
+    rdfs:comment "Link para acesso, agendamento ou informações adicionais (ex.: agendamento do exame)." .
+
+:hasAddress rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "possui endereço" ;
+    rdfs:comment "Endereço completo da unidade." .
+
+:hasCity rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "está na cidade" ;
+    rdfs:comment "Cidade onde a unidade se encontra." .
+
+:hasState rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "está no estado" ;
+    rdfs:comment "Estado (UF) onde a unidade se encontra." .
+
+:hasWorkingHours rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "horário de funcionamento" .
+
+:hasPricingDetail rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Plano ;
+    rdfs:range xsd:string ;
+    rdfs:label "has pricing detail" ;
+    rdfs:comment "Provides detailed pricing information for the plan, including unit-specific variations." .
+
+:hasUnitPricingDetail rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:string ;
+    rdfs:label "has unit pricing detail" ;
+    rdfs:comment "Provides specific pricing variations for this unit as per KB information." .
+
+# INDIVÍDUOS – Tipos de Unidade
+
+:Tipo_Slim rdf:type :UnidadeTipo ;
+    rdfs:label "Slim" ;
+    rdfs:comment "Unidade com ticket médio entre R$129,90 e R$149,90. Exemplos: São Geraldo, Xangrilá, Pagani, etc." .
+
+:Tipo_Premium rdf:type :UnidadeTipo ;
+    rdfs:label "Premium" ;
+    rdfs:comment "Unidade com acabamento e aparelhagem de alta qualidade. Exemplos: Trindade, Itacorubi, Chapecó, etc." .
+
+:Tipo_Prime rdf:type :UnidadeTipo ;
+    rdfs:label "Prime / Espaço Prime" ;
+    rdfs:comment "Unidade com equipamentos superiores e atendimento premium (mais professores por aluno). Exemplos: Funcionários, Mangabeiras, Ouro Preto 2, etc." .
+
+:Tipo_Slim owl:disjointWith :Tipo_Premium .
+:Tipo_Slim owl:disjointWith :Tipo_Prime .
+:Tipo_Premium owl:disjointWith :Tipo_Prime .
+
+# INDIVÍDUOS – Unidades (Slim, Premium, Prime)
+
+:Unidade_SaoGeraldo rdf:type :Unidade ;
+    rdfs:label "São Geraldo" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Rua Potomaio, 500 - São Geraldo, 31050-640" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Xangrila rdf:type :Unidade ;
+    rdfs:label "Xangrilá" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Olavo Brasil Junior, 32 – Trevo Contagem - MG" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Pagani rdf:type :Unidade ;
+    rdfs:label "Pagani" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Corresponds to Pagani I from table." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "Av. Atilio Pedro Pagani, 1300 - Passa Vinte, 88132-149" ;
+    :hasCity "Passa Vinte" ;
+    :hasState "SC" .
+
+:Unidade_Ingleses rdf:type :Unidade ;
+    rdfs:label "Ingleses" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Valores de assinaturas diferenciados: Plus R$149,90 e Combo Saúde R$179,90." ;
+    :hasUnitPricingDetail "Pricing: Plus R$149,90; Combo Saúde R$179,90." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "R. Graciliano Manoel Gomes, 423 - Ingleses do Rio Vermelho, Florianópolis - SC, 88058-200" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" .
+
+:Unidade_Navegantes rdf:type :Unidade ;
+    rdfs:label "Navegantes" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Valores diferenciados como na unidade Ingleses." ;
+    :hasUnitPricingDetail "Pricing: Plus R$149,90; Combo Saúde R$179,90." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Av. Santos Dumont, 202 - Centro, Navegantes - SC, 88370-000" ;
+    :hasCity "Navegantes" ;
+    :hasState "SC" .
+
+:Unidade_Neves rdf:type :Unidade ;
+    rdfs:label "Neves" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Unidade Slim mentioned in the KB." ;
+    :hasWorkingHours "Not specified" ;
+    :hasAddress "Not specified" ;
+    :hasCity "Not specified" ;
+    :hasState "Not specified" .
+
+# Premium
+
+:Unidade_Trindade rdf:type :Unidade ;
+    rdfs:label "Trindade" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasAddress "Av. João de Deus Costa, 366 - Tres Barras, Contagem - MG, 32040-580" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Itacorubi rdf:type :Unidade ;
+    rdfs:label "Itacorubi" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" .
+
+# Prime
+
+:Unidade_Funcionarios rdf:type :Unidade ;
+    rdfs:label "Funcionários (Unidade Prime)" ;
+    :hasType :Tipo_Prime ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Carandaí, 41 - Funcionários, 30130-060" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Mangabeiras rdf:type :Unidade ;
+    rdfs:label "Mangabeiras" ;
+    :hasType :Tipo_Prime ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. dos Bandeirantes, 1550 - Mangabeiras, 30210-420" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_OuroPreto2 rdf:type :Unidade ;
+    rdfs:label "Ouro Preto 2" ;
+    :hasType :Tipo_Prime ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Brasiléia, 50 - Ouro Preto, 31340-090" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_LagoaSanta rdf:type :Unidade ;
+    rdfs:label "Lagoa Santa" ;
+    :hasType :Tipo_Prime ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Getúlio Vargas, 2440 - Joana Darc, 33400-000" ;
+    :hasCity "Lagoa Santa" ;
+    :hasState "MG" .
+
+:Unidade_JoaoMonlevadeLoanda rdf:type :Unidade ;
+    rdfs:label "João Monlevade Loanda" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Unidade Slim citada no KB." ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Armando Fajardo, 1801 - Loanda, 35930-379" ;
+    :hasCity "João Monlevade" ;
+    :hasState "MG" .
+
+:Unidade_Itajai rdf:type :Unidade ;
+    rdfs:label "Itajaí" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "R. Heitor Liberato, 1928 - São João, 88304-101" ;
+    :hasCity "Itajaí" ;
+    :hasState "SC" .
+
+:Unidade_Camelao rdf:type :Unidade ;
+    rdfs:label "Camelão" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Palhoça/SC." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasAddress "R. Pref. Reinoldo Alves, 41 - Passa Vinte, 88132-000" ;
+    :hasCity "Passa Vinte" ;
+    :hasState "SC" .
+
+:Unidade_Pampulha rdf:type :Unidade ;
+    rdfs:label "Pampulha" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Dom Pedro I, 402 - Itapoã, 31550-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_ItabiraGabiroba rdf:type :Unidade ;
+    rdfs:label "Itabira Gabiroba" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Potential naming conflict with prime Itabira." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Dr. Pedro Guerra, 216 - Gabiroba (1ª Seção), 35900-410" ;
+    :hasCity "Itabira" ;
+    :hasState "MG" .
+
+:Unidade_BelaVista rdf:type :Unidade ;
+    rdfs:label "Bela Vista" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Av. Paulo Roberto Vidal, 55 - Caminho Novo, 88132-599" ;
+    :hasCity "Passa Vinte" ;
+    :hasState "SC" .
+
+:Unidade_Areias rdf:type :Unidade ;
+    rdfs:label "Areias" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasAddress "R. da Independência, 1470 - Areias, 88103-000" ;
+    :hasCity "Areias" ;
+    :hasState "SC" .
+
+:Unidade_BiguaçuCentro rdf:type :Unidade ;
+    rdfs:label "Biguaçu Centro" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "R. Cel. Teixeira de Oliveira, 243 - Centro, Biguaçu - SC, 88160-130" ;
+    :hasCity "Biguaçu" ;
+    :hasState "SC" .
+
+:Unidade_SertaoMaruim rdf:type :Unidade ;
+    rdfs:label "Sertão do Maruim" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "SC-281, 2665 - Sertão do Maruim, 88106-115" ;
+    :hasCity "Sertão do Maruim" ;
+    :hasState "SC" .
+
+:Unidade_FlavioMarques rdf:type :Unidade ;
+    rdfs:label "Flávio Marques" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Menelick de Carvalho, 245 - Flávio Marques Lisboa, 30624-120" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SeteLagoas rdf:type :Unidade ;
+    rdfs:label "Sete Lagoas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Prof. Abeylard, 279 - Centro, Sete Lagoas, 35700-069" ;
+    :hasCity "Sete Lagoas" ;
+    :hasState "MG" .
+
+:Unidade_JardimAtlantico rdf:type :Unidade ;
+    rdfs:label "Jardim Atlântico" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Florianópolis SC." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Marinheiro Max Schramm - Jardim Atlântico, 88095" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" .
+
+:Unidade_Aririu rdf:type :Unidade ;
+    rdfs:label "Aririu" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Bom Jesus de Nazaré, 935 - Aririu, 88135-100" ;
+    :hasCity "Aririu" ;
+    :hasState "SC" .
+
+:Unidade_Palmeiras rdf:type :Unidade ;
+    rdfs:label "Palmeiras" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Dom João VI, 1581 loja 3 e 4 - Palmeira, 33575-460" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_PedroLeopoldo rdf:type :Unidade ;
+    rdfs:label "Pedro Leopoldo" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Cel. Juventino Dias, 95 - Centro, 33250-159" ;
+    :hasCity "Pedro Leopoldo" ;
+    :hasState "MG" .
+
+:Unidade_Tirol rdf:type :Unidade ;
+    rdfs:label "Tirol" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Nélio Cerqueira, 1981 - Tirol, 30662-060" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Alipio rdf:type :Unidade ;
+    rdfs:label "Alípio" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Abílio Machado, 750a - Alípio de Melo, 30830-482" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Castelinho rdf:type :Unidade ;
+    rdfs:label "Castelinho" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Damas Ribeiro, 361 - Eldorado, 32310-470" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Gloria rdf:type :Unidade ;
+    rdfs:label "Glória" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Brigadeiro Eduardo Gomes, 1239 - Gloria, Belo Horizonte - 30870-100" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_JardimLimoeiro rdf:type :Unidade ;
+    rdfs:label "Jardim Limoeiro" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Rua Dr. Júlio Otaviano Ferreira, 151 - Cidade Nova, 31170-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_MartMinas rdf:type :Unidade ;
+    rdfs:label "Mart Minas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Diamante, 732 - São Joaquim, Contagem - 32113-000" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Goiania rdf:type :Unidade ;
+    rdfs:label "Goiânia" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Pomba, 649 - Goiânia, 31950-490" ;
+    :hasCity "Goiânia" ;
+    :hasState "MG" .
+
+:Unidade_Gavea2 rdf:type :Unidade ;
+    rdfs:label "Gávea II" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Araticum, 200 - Angicus, 33200-000" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Serrano rdf:type :Unidade ;
+    rdfs:label "Serrano" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Serrana, 970 - Serrano, Belo Horizonte - 30882-370" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Industrial rdf:type :Unidade ;
+    rdfs:label "Industrial" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Coronel Benjamim Guimarães, 838 - Industrial, 32230-000" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_SaoSebastiao rdf:type :Unidade ;
+    rdfs:label "São Sebastião" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "R. Marino Jorge dos Santos, 369 - São Sebastião, 88136-200" ;
+    :hasCity "São Sebastião" ;
+    :hasState "SC" .
+
+:Unidade_SoMarcas rdf:type :Unidade ;
+    rdfs:label "Só Marcas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Cardeal Eugênio Pacelli, 1280 - Cidade Industrial, 32210-002" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_CeuAzul rdf:type :Unidade ;
+    rdfs:label "Céu Azul" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Qui 05:30h-23:00h, Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Antônio José dos Santos, 409 - Céu Azul, 31580-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Paqueta rdf:type :Unidade ;
+    rdfs:label "Paquetá" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Santa Terezinha, 231 - Paquetá, Belo Horizonte - MG, 31365-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Ibirite rdf:type :Unidade ;
+    rdfs:label "Ibirité" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Freitas de Oliveira, 285 - Alvorada, 32400-000" ;
+    :hasCity "Ibirité" ;
+    :hasState "MG" .
+
+:Unidade_SaoBento rdf:type :Unidade ;
+    rdfs:label "São Bento" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Some references treat São Bento as Prime, but here it's Slim." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Michel Jeha, 178 - São Bento, 30350-330" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_ItabiraEsplanada rdf:type :Unidade ;
+    rdfs:label "Itabira Esplanada" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Mauro Ribeiro, 1010 - Esplanada da Estacao, Itabira - MG, 35900-564" ;
+    :hasCity "Itabira" ;
+    :hasState "MG" .
+
+:Unidade_CampinasSC rdf:type :Unidade ;
+    rdfs:label "Campinas (SC)" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "R. Eugênio Raulino Koerich, 319 - Campinas, 88101-060" ;
+    :hasCity "Campinas" ;
+    :hasState "SC" .
+
+:Unidade_SantaInes rdf:type :Unidade ;
+    rdfs:label "Santa Inês" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Waldyr Soeiro Emrich, 3350 - Loja 6 - Santa Helena, 30610-530" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SantaInes2 rdf:type :Unidade ;
+    rdfs:label "Santa Inês II" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. José Cândido da Silveira, 2790 - Santa Inês, 31080-154" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_BetimSaoCaetano rdf:type :Unidade ;
+    rdfs:label "Betim São Caetano" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Tapajós, 1180 - São Caetano, 32073-740" ;
+    :hasCity "Betim" ;
+    :hasState "MG" .
+
+:Unidade_ValeJatoba rdf:type :Unidade ;
+    rdfs:label "Vale do Jatobá" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Senador Levindo Coelho, 1830 - Mangueiras, 30666-420" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_ContagemCentro rdf:type :Unidade ;
+    rdfs:label "Contagem Centro" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Manoel Alves, 46 - Centro, 32041-400" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Justinopolis rdf:type :Unidade ;
+    rdfs:label "Justinópolis" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Denise Cristina da Rocha, 1001 - São Januário, 33900-001" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SaoBenedito rdf:type :Unidade ;
+    rdfs:label "São Benedito" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Brasília, 832 - São Benedito, 33120-452" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Floresta rdf:type :Unidade ;
+    rdfs:label "Floresta" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Flávio dos Santos, 325 - Floresta, 30015-150" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_OuroPretoBH rdf:type :Unidade ;
+    rdfs:label "Ouro Preto (Belo Horizonte)" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Monteiro Lobato, 167 - Ouro Preto, 31310-530" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Ipiranga rdf:type :Unidade ;
+    rdfs:label "Ipiranga" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "Av. Bernarda Silvestre, 78 - Visc. do Rio Branco, 31535-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Castelo rdf:type :Unidade ;
+    rdfs:label "Castelo" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. dos Engenheiros, 167 - Castelo, Belo Horizonte - 30840-492" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Londrina rdf:type :Unidade ;
+    rdfs:label "Londrina" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Bernardo Guimarães, 280 - Londrina, 33115-650" ;
+    :hasCity "Londrina" ;
+    :hasState "MG" .
+
+:Unidade_Nazare rdf:type :Unidade ;
+    rdfs:label "Nazaré" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Candelária, 125 - Nazaré, 31990-010" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_MorroAlto rdf:type :Unidade ;
+    rdfs:label "Morro Alto" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Um, 838 - Jequitibá, 33203-440" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_SantaHelena rdf:type :Unidade ;
+    rdfs:label "Santa Helena" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Waldyr Soeiro Emrich, 3350 - Loja 6 - Santa Helena, 30610-530" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SantaMonica rdf:type :Unidade ;
+    rdfs:label "Santa Mônica" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "R. Érico Veríssimo, 2345 - Santa Monica, Belo Horizonte - MG, 31525-365" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SantoAmaro rdf:type :Unidade ;
+    rdfs:label "Santo Amaro" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "R. Intendente Broering, 3117 - Vila Becker, Santo Amaro da Imperatriz - SC, 88140-000" ;
+    :hasCity "Santo Amaro da Imperatriz" ;
+    :hasState "SC" .
+
+:Unidade_Forquilhas rdf:type :Unidade ;
+    rdfs:label "Forquilhas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "R. Antônio Jovita Duarte, 5915 - Forquilhas, São José - SC, 88107-280" ;
+    :hasCity "São José" ;
+    :hasState "SC" .
+
+:Unidade_Muquicaba rdf:type :Unidade ;
+    rdfs:label "Muquiçaba" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Ewerson de Abreu Sodré, 100 - Muquiçaba, Guarapari, ES 29215-010" ;
+    :hasCity "Guarapari" ;
+    :hasState "ES" .
+
+:Unidade_Saramenha rdf:type :Unidade ;
+    rdfs:label "Saramenha" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Saramenha, 1530 - Guarani, 31840-220" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_BetimDecamao rdf:type :Unidade ;
+    rdfs:label "Betim Decamão" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Edmeia Matos Lazzarotti, 3238 - Decamao, 32603-055" ;
+    :hasCity "Betim" ;
+    :hasState "MG" .
+
+:Unidade_FernaoDias rdf:type :Unidade ;
+    rdfs:label "Fernão Dias" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Aiuruoca, 54 - Fernão Dias, 31910-130" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_FernaoDias2 rdf:type :Unidade ;
+    rdfs:label "Fernão Dias II" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Maria Ferreira da Silva, 440 - Fernão Dias, 31920-350" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_PatoBranco rdf:type :Unidade ;
+    rdfs:label "Pato Branco (Unidade Slim)" ;
+    :hasType :Tipo_Slim ;
+    rdfs:comment "Distinct from Pato Branco II (Premium) or Pato Branco Centro (Prime)" ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasAddress "Av. Tupi, 1000 - Bortot, 85504-084" ;
+    :hasCity "Pato Branco" ;
+    :hasState "PR" .
+
+:Unidade_CidadeNova rdf:type :Unidade ;
+    rdfs:label "Cidade Nova" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Rua Dr. Júlio Otaviano Ferreira, 151 - Cidade Nova, 31170-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SagradaFamilia rdf:type :Unidade ;
+    rdfs:label "Sagrada Família" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Conselheiro Lafaiete, 1416 - Sagrada Família, 31035-560" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Veneza rdf:type :Unidade ;
+    rdfs:label "Veneza" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Osvaldo Alves Araújo, 599 - Veneza, 33820-382" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Cabral rdf:type :Unidade ;
+    rdfs:label "Cabral" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Alameda dos Sabiás, 752 - Cabral, Contagem - 32146-024" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_RioBranco rdf:type :Unidade ;
+    rdfs:label "Rio Branco" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Bernarda Silvestre, 78 - Visc. do Rio Branco, 31535-200" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Forquilhinhas rdf:type :Unidade ;
+    rdfs:label "Forquilhinhas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasAddress "R. Vereador Arthur Manoel Mariano, 1620 - Forquilhinhas, 88106-500" ;
+    :hasCity "Forquilhinhas" ;
+    :hasState "SC" .
+
+:Unidade_Cardoso rdf:type :Unidade ;
+    rdfs:label "Cardoso" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "R. Barão de Monte Alto, 911 - Cardoso, 30626-480" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SaoGabriel rdf:type :Unidade ;
+    rdfs:label "São Gabriel" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "R. Anapurus, 49 - São Gabriel, 31980-210" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_ParaDeMinas rdf:type :Unidade ;
+    rdfs:label "Pará de Minas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Ricardo Marinho, 650 - São Cristovao, 35660-398" ;
+    :hasCity "Pará de Minas" ;
+    :hasState "MG" .
+
+:Unidade_Prado rdf:type :Unidade ;
+    rdfs:label "Prado" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Francisco Sá, n°197 - Prado, 30410-060" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Matozinhos rdf:type :Unidade ;
+    rdfs:label "Matozinhos" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Oito de Dezembro, 18 - Centro, Matozinhos, 35720-000" ;
+    :hasCity "Matozinhos" ;
+    :hasState "MG" .
+
+:Unidade_SantaEfigenia rdf:type :Unidade ;
+    rdfs:label "Santa Efigênia" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Mem de Sá, 271 - Santa Efigênia, 30260-270" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_LagoaBH rdf:type :Unidade ;
+    rdfs:label "Lagoa (BH)" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "R. dos Menezes, 249 - Lagoa, 31610-090" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Eldorado rdf:type :Unidade ;
+    rdfs:label "Eldorado" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Rua Mario Vital, 168 - Eldorado, Contagem - 32315160" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_TresBarras rdf:type :Unidade ;
+    rdfs:label "Três Barras" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. João de Deus Costa, 366 - Tres Barras, Contagem - MG, 32040-580" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Cachoeirinha rdf:type :Unidade ;
+    rdfs:label "Cachoeirinha" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Bernardo de Vasconcelos, 1193 - Cachoeirinha, 31150-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Jaragua rdf:type :Unidade ;
+    rdfs:label "Jaraguá" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Rua Izabel Bueno, 205 - Jaraguá, 31270-030" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_SantaMaria rdf:type :Unidade ;
+    rdfs:label "Santa Maria" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Praça Santa Maria, 75 - Santa Maria, 32240-190" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_NovaFloresta rdf:type :Unidade ;
+    rdfs:label "Nova Floresta" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Mossoró, 140 - Nova Floresta, 31140-330" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_JardimEldorado rdf:type :Unidade ;
+    rdfs:label "Jardim Eldorado" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Av. Gentil Reinaldo Cordioli, 157 - Jardim Eldorado, 88133-500" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" .
+
+:Unidade_BrasilAtacadista2 rdf:type :Unidade ;
+    rdfs:label "Brasil Atacadista II" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Rodovia Br-101 KM 215 7 - no Aririu, Palhoça - SC" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" .
+
+:Unidade_VistaAlegre rdf:type :Unidade ;
+    rdfs:label "Vista Alegre" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Paiva, 39 - Vista Alegre, 30512-460" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Heliopolis rdf:type :Unidade ;
+    rdfs:label "Heliópolis" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Maria Amélia Maia, 1191 - Heliópolis, 31741-171" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_ShoppingContagem rdf:type :Unidade ;
+    rdfs:label "Shopping Contagem" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 13:00h-18:00h, Dom 13:00h-18:00h" ;
+    :hasAddress "Av. Severino Ballesteros, 850 - Cabral, Contagem - 32110-005" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_JoaoMonlevade rdf:type :Unidade ;
+    rdfs:label "João Monlevade (Carneirinhos)" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-22:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Gentil Bicalho, 540 - Carneirinhos, 35930-478" ;
+    :hasCity "João Monlevade" ;
+    :hasState "MG" .
+
+:Unidade_FranciscoBeltrao rdf:type :Unidade ;
+    rdfs:label "Francisco Beltrão" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 15:00h-20:00h" ;
+    :hasAddress "R. Antonina, 810 - Nossa Sra. Aparecida, 85601-580" ;
+    :hasCity "Francisco Beltrão" ;
+    :hasState "PR" .
+
+:Unidade_Camargos rdf:type :Unidade ;
+    rdfs:label "Camargos" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Gentil Portugal do Brasil, 355 - Camargos, Belo Horizonte - MG, 30520-540" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_CentroPalhoca rdf:type :Unidade ;
+    rdfs:label "Centro de Palhoça" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "Av. Prefeito Nelson Martins, 1733 - Centro, 88131-280" ;
+    :hasCity "Palhoça" ;
+    :hasState "SC" .
+
+:Unidade_OiapoqueContagem rdf:type :Unidade ;
+    rdfs:label "Oiapoque Contagem" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Mario Vital, 168 - Eldorado, Contagem - 32315160" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Biguacu rdf:type :Unidade ;
+    rdfs:label "Biguaçu" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "R. Júlio Teodoro Martins, 3032 - Fundos, Biguaçu - SC, 88161-400" ;
+    :hasCity "Biguaçu" ;
+    :hasState "SC" .
+
+:Unidade_Igarape rdf:type :Unidade ;
+    rdfs:label "Igarapé" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Gov. Valadares, 312 - Apto 101 - Centro, Igarapé - MG, 32900-000" ;
+    :hasCity "Igarapé" ;
+    :hasState "MG" .
+
+:Unidade_Vilarinho rdf:type :Unidade ;
+    rdfs:label "Vilarinho" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Av. Vilarinho, 5721 - Mantiqueira, 31615-250" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+:Unidade_Tijucas rdf:type :Unidade ;
+    rdfs:label "Tijucas" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Av. Paineiras, 470 - Universitario, Tijucas - SC, 88200-000" ;
+    :hasCity "Tijucas" ;
+    :hasState "SC" .
+
+:Unidade_RiachoDasPedras rdf:type :Unidade ;
+    rdfs:label "Riacho das Pedras" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "Rua Rio Comprido, Parque, 1387 - Riacho das Pedras, Contagem - MG, 32280-070" ;
+    :hasCity "Contagem" ;
+    :hasState "MG" .
+
+:Unidade_Pagani2 rdf:type :Unidade ;
+    rdfs:label "Pagani 2" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 04:30h-00:00h, Sáb 08:00h-20:00h, Dom 08:00h-20:00h" ;
+    :hasAddress "Av. Atílio Pedro Pagani, 1413 - 88132-149" ;
+    :hasCity "Passa Vinte" ;
+    :hasState "SC" .
+
+:Unidade_Capoeiras rdf:type :Unidade ;
+    rdfs:label "Capoeiras" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "R. Joaquim Carneiro, 120 - Capoeiras, Florianópolis - SC, 88085-120" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" .
+
+:Unidade_Floramar rdf:type :Unidade ;
+    rdfs:label "Floramar" ;
+    :hasType :Tipo_Slim ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. José Ferreira Magalhães, 403 - Floramar, 31742-093" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+# More Unidade Premium
+
+:Unidade_MeiaPraiaItapema rdf:type :Unidade ;
+    rdfs:label "Meia Praia - Itapema" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Terceira Av., 503 - Meia Praia, Itapema - SC, 88220-000" ;
+    :hasCity "Itapema" ;
+    :hasState "SC" .
+
+:Unidade_Chapeco rdf:type :Unidade ;
+    rdfs:label "Chapecó" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "Av. Getúlio Dorneles Vargas, 951 - Centro, Chapecó - SC, 89805-184" ;
+    :hasCity "Chapecó" ;
+    :hasState "SC" .
+
+:Unidade_PatoBranco2 rdf:type :Unidade ;
+    rdfs:label "Pato Branco II" ;
+    :hasType :Tipo_Premium ;
+    rdfs:comment "Distinto de 'Pato Branco (Unidade Slim)'." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "R. Caramuru, 596 - Centro, 85501-051" ;
+    :hasCity "Pato Branco" ;
+    :hasState "PR" .
+
+:Unidade_FlorianopolisCentro rdf:type :Unidade ;
+    rdfs:label "Florianópolis (Centro)" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "Rua Francisco Tolentino, 800 - Centro, 88010-200" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" .
+
+:Unidade_PedraBranca rdf:type :Unidade ;
+    rdfs:label "Pedra Branca" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 08:00h-20:00h" ;
+    :hasAddress "Av. Pedra Branca, 744 - Cidade Universitária - Pedra Branca, 88137-270" ;
+    :hasCity "Pedra Branca" ;
+    :hasState "SC" .
+
+:Unidade_Jurere rdf:type :Unidade ;
+    rdfs:label "Jurere" ;
+    :hasType :Tipo_Premium ;
+    rdfs:comment "Valores: Plus R$199,90, Combo Saúde R$239,90." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom 09:00h-15:00h" ;
+    :hasAddress "Rodovia Jornalista Maurício Sirotski Sobrinho, 5451 - Florianópolis - SC, 88053-410" ;
+    :hasCity "Florianópolis" ;
+    :hasState "SC" .
+
+:Unidade_AbrahaoCaram rdf:type :Unidade ;
+    rdfs:label "Abrahão Caram" ;
+    :hasType :Tipo_Premium ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 08:00h-20:00h" ;
+    :hasAddress "Av. Antônio Abrahão Caram, 118 - São José, Belo Horizonte - MG, 31275-000" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+# More Unidade Prime / Espaço Prime
+
+:Unidade_Itabira rdf:type :Unidade ;
+    rdfs:label "Itabira" ;
+    :hasType :Tipo_Prime ;
+    rdfs:comment "Itabira como Prime." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom Fechada" ;
+    :hasAddress "Av. Mauro Ribeiro, 1010 - Esplanada da Estacao, Itabira - MG, 35900-564" ;
+    :hasCity "Itabira" ;
+    :hasState "MG" .
+
+:Unidade_PatoBrancoCentro rdf:type :Unidade ;
+    rdfs:label "Pato Branco Centro" ;
+    :hasType :Tipo_Prime ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 09:00h-15:00h, Dom Fechada" ;
+    :hasAddress "R. Caramuru, 596 - Centro, 85501-051" ;
+    :hasCity "Pato Branco" ;
+    :hasState "PR" .
+
+:Unidade_SaoBentoPrime rdf:type :Unidade ;
+    rdfs:label "São Bento (Prime)" ;
+    :hasType :Tipo_Prime ;
+    rdfs:comment "Another reference for São Bento as Prime." ;
+    :hasWorkingHours "Seg-Sex 05:30h-23:00h, Sáb 08:00h-13:00h, Dom 09:00h-13:00h" ;
+    :hasAddress "R. Michel Jeha, 178 - São Bento, 30350-330" ;
+    :hasCity "Belo Horizonte" ;
+    :hasState "MG" .
+
+# INDIVÍDUOS – Planos e Assinaturas
+
+:Plano_Plus rdf:type :Plano ;
+    rdfs:label "Plano Plus" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Acesso livre a todas as unidades, exceto: Unidade Funcionários, Centro de Florianópolis, Itapema, Pedra Branca, Trindade, Itacorubi, Pato Branco Centro e Chapecó." ;
+    :hasPrice "129.90"^^xsd:decimal ;
+    :hasUnitException """
+    Ingleses/Navegantes: R$149,90
+    Premium Grupo A (Trindade, Abrahão Caram, Chapecó, Florianópolis): R$149,90
+    Premium Grupo B (Pedra Branca, Meia Praia-Itapema, Itacorubi, Pato Branco II): R$179,90
+    Jurere: R$199,90
+    """ ;
+    :includesBenefit :Benefit_SaverClub ;
+    :includesBenefit :Benefit_MetodologiaExclusiva ;
+    :includesBenefit :Benefit_AplicativoExclusivo .
+
+:Plano_ComboSaude rdf:type :Plano ;
+    rdfs:label "Plano Combo da Saúde" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Mesmo acesso do Plano Plus, acrescido de Acompanhamento Nutricional e Plano Alimentar Personalizado." ;
+    :hasPrice "149.90"^^xsd:decimal ;
+    :hasPricingDetail """
+        Standard price: R$149,90/month
+        Exceptions:
+        - Ingleses and Navegantes: R$179,90/month
+        - Premium Units Group A (Trindade, Abrahão Caram, Chapecó, Florianópolis): R$179,90/month
+        - Premium Units Group B (Pedra Branca, Meia Praia - Itapema, Itacorubi, Pato Branco II): R$199,90/month
+        - Jurere: R$239,90/month
+    """ ;
+    :includesBenefit :Benefit_SaverClub ;
+    :includesBenefit :Benefit_MetodologiaExclusiva ;
+    :includesBenefit :Benefit_AplicativoExclusivo ;
+    :includesBenefit :Benefit_Bioimpedancia ;
+    :includesBenefit :Benefit_EspacoPerformance ;
+    :includesBenefit :Benefit_EspacoLuxo ;
+    :includesBenefit :Benefit_TreinoAtendimentoSuperior ;
+    :includesBenefit :Benefit_AcompanhamentoNutricional ;
+    :includesBenefit :Benefit_PlanoAlimentarPersonalizado .
+
+:Plano_Prime rdf:type :Plano ;
+    rdfs:label "Plano Prime" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Acesso livre a todas as unidades Slim com experiência premium." ;
+    :hasPrice "199.90"^^xsd:decimal ;
+    :hasPricingDetail """
+        Base price: R$199,90/month (Mangabeiras, Ouro Preto, Lagoa Santa, Pato Branco II)
+        Exceptions:
+        - Itacorubi: R$249,90/month
+        - Funcionários: R$219,90/month
+        - São Bento: R$229,90/month
+        - Campinas: R$239,90/month
+    """ ;
+    :includesBenefit :Benefit_SaverClub ;
+    :includesBenefit :Benefit_MetodologiaExclusiva ;
+    :includesBenefit :Benefit_AplicativoExclusivo ;
+    :includesBenefit :Benefit_Bioimpedancia ;
+    :includesBenefit :Benefit_EspacoLuxo ;
+    :includesBenefit :Benefit_TreinoAtendimentoSuperior .
+
+:Plano_ComboPrime rdf:type :Plano ;
+    rdfs:label "Plano Combo Prime" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Todos os benefícios do Plano Prime, acrescidos de Acompanhamento Nutricional e Plano Alimentar Personalizado." ;
+    :hasPrice "219.90"^^xsd:decimal ;
+    :hasPricingDetail """
+        Base price: R$219,90/month (Mangabeiras, Ouro Preto, Lagoa Santa, Pato Branco II)
+        Exceptions:
+        - Itacorubi: R$269,90/month
+        - Funcionários: R$239,90/month
+        - São Bento: R$249,90/month
+        - Campinas: R$259,90/month
+    """ ;
+    :includesBenefit :Benefit_SaverClub ;
+    :includesBenefit :Benefit_MetodologiaExclusiva ;
+    :includesBenefit :Benefit_AplicativoExclusivo ;
+    :includesBenefit :Benefit_Bioimpedancia ;
+    :includesBenefit :Benefit_EspacoLuxo ;
+    :includesBenefit :Benefit_TreinoAtendimentoSuperior ;
+    :includesBenefit :Benefit_AcompanhamentoNutricional ;
+    :includesBenefit :Benefit_PlanoAlimentarPersonalizado .
+
+:Plano_Premium rdf:type :Plano ;
+    rdfs:label "Plano Premium" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Acesso livre a todas as unidades, exceto às Unidades Prime e Espaço Prime. Benefícios: Saver Club, Metodologia Exclusiva, Aplicativo Exclusivo, Exame de Bioimpedância e Espaço Performance." ;
+    :hasPrice "149.90"^^xsd:decimal ;
+    :includesBenefit :Benefit_SaverClub ;
+    :includesBenefit :Benefit_MetodologiaExclusiva ;
+    :includesBenefit :Benefit_AplicativoExclusivo ;
+    :includesBenefit :Benefit_Bioimpedancia ;
+    :includesBenefit :Benefit_EspacoPerformance .
+
+:Plano_ComboPremium rdf:type :Plano ;
+    rdfs:label "Plano Combo Premium" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Todos os benefícios do Plano Premium, acrescidos de Acompanhamento Nutricional e Plano Alimentar Personalizado." ;
+    :hasPricingDetail "Starting from R$179,90 for a 30-day plan, varies by unit." ;
+    :hasPrice "179.90"^^xsd:decimal ;
+    :hasPricingDetail "For Unidade Premium: Group A: Combo R$179,90; Group B: Combo R$199,90; Jurere: Combo R$239,90." ;
+    :includesBenefit :Benefit_SaverClub ;
+    :includesBenefit :Benefit_MetodologiaExclusiva ;
+    :includesBenefit :Benefit_AplicativoExclusivo ;
+    :includesBenefit :Benefit_Bioimpedancia ;
+    :includesBenefit :Benefit_EspacoPerformance ;
+    :includesBenefit :Benefit_AcompanhamentoNutricional ;
+    :includesBenefit :Benefit_PlanoAlimentarPersonalizado .
+
+:Plano_MensalComum rdf:type :Plano ;
+    rdfs:label "Mensalidades Comuns" ;
+    :hasRecurrence "30 dias" ;
+    rdfs:comment "Adesão presencial na unidade. Valores a partir de R$179.90, variando conforme a unidade." ;
+    :hasPrice "179.90"^^xsd:decimal .
+
+:Plano_Diaria rdf:type :Plano ;
+    rdfs:label "Diária" ;
+    :hasRecurrence "Diária" ;
+    rdfs:comment "Valor: R$40,00 em Unidades Slim e Premium; R$60,00 em Unidades Prime." ;
+    :hasPricingDetail "R$40,00 for Slim and Premium units; R$60,00 for Prime units" ;
+    :hasPrice "40.00"^^xsd:decimal .
+
+:Plano_Semanal rdf:type :Plano ;
+    rdfs:label "Plano Semanal" ;
+    :hasRecurrence "Semanal" ;
+    rdfs:comment "Valor para treinar 7 dias: R$99.90." ;
+    :hasPricingDetail "7-day plan: R$99,90" ;
+    :hasPrice "99.90"^^xsd:decimal .
+
+:Plano_Quinzenal rdf:type :Plano ;
+    rdfs:label "Plano Quinzenal" ;
+    :hasRecurrence "Quinzenal" ;
+    rdfs:comment "Valor para treinar 15 dias: R$119.90." ;
+    :hasPricingDetail "15-day plan: R$119,90" ;
+    :hasPrice "119.90"^^xsd:decimal .
+
+:Assinatura_HeroisSaude rdf:type :Plano ;
+    rdfs:label "Assinatura Heróis da Saúde" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Destinada a profissionais de saúde (COREN, CRM, CREFITO). Valor: R$89.90 mensais, isenção de matrícula, acesso a todas as unidades (exceto Unidade Funcionários e Espaço Prime) e inclusão de todas as modalidades secas e plataforma de treino." ;
+    :hasPrice "89.90"^^xsd:decimal ;
+    :includesBenefit :Benefit_PlataformaTreino .
+
+:Assinatura_SegurancaPublica rdf:type :Plano ;
+    rdfs:label "Assinatura Segurança Pública" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Destinada a profissionais da segurança pública (Militares, Polícia, Bombeiros, etc.). Valor: R$89.90 mensais, isenção de matrícula, acesso a todas as unidades (exceto Unidade Funcionários e Espaço Prime)." ;
+    :hasPrice "89.90"^^xsd:decimal .
+
+:Plano_Family rdf:type :Plano ;
+    rdfs:label "Plano Family" ;
+    :hasRecurrence "Mensal" ;
+    rdfs:comment "Valor de R$199,90 mensais inclui Bike Spinning em casa + Acesso PREMIUM (exceto Primes/Espaço Prime). Familiar adicional R$49,90 mensais, matrícula R$99,90." ;
+    :hasPrice "199.90"^^xsd:decimal .
+
+# INDIVÍDUOS – Benefícios
+
+:Benefit_SaverClub rdf:type :Benefit ;
+    rdfs:label "Saver Club" ;
+    rdfs:comment "Descontos em mais de 30 mil estabelecimentos." .
+
+:Benefit_MetodologiaExclusiva rdf:type :Benefit ;
+    rdfs:label "Metodologia Exclusiva" ;
+    rdfs:comment "Treino adaptado às necessidades individuais." .
+
+:Benefit_AplicativoExclusivo rdf:type :Benefit ;
+    rdfs:label "Aplicativo Exclusivo" ;
+    rdfs:comment "Monitoramento 24 horas do progresso, feedback e comunicação contínua com profissionais." .
+
+:Benefit_Bioimpedancia rdf:type :Benefit ;
+    rdfs:label "Exame de Bioimpedância" ;
+    rdfs:comment "Avaliação da composição corporal, inclusa em diversos planos. Avulso por R$99.90, agendamento em https://pratiquefitness.com.br/exame." .
+
+:Benefit_AcompanhamentoNutricional rdf:type :Benefit ;
+    rdfs:label "Acompanhamento Nutricional" ;
+    rdfs:comment "Consultas online com nutricionista esportivo e elaboração de plano alimentar personalizado." .
+
+:Benefit_PlanoAlimentarPersonalizado rdf:type :Benefit ;
+    rdfs:label "Plano Alimentar Personalizado" ;
+    rdfs:comment "Plano alimentar individualizado conforme as necessidades do aluno." .
+
+:Benefit_EspacoLuxo rdf:type :Benefit ;
+    rdfs:label "Espaço Luxo" ;
+    rdfs:comment "Acesso a ambientes diferenciados e confortáveis para um treino premium." .
+
+:Benefit_TreinoAtendimentoSuperior rdf:type :Benefit ;
+    rdfs:label "Treino e Atendimento Superior" ;
+    rdfs:comment "Serviços de alta qualidade, com acompanhamento especializado e atendimento diferenciado." .
+
+:Benefit_EspacoPerformance rdf:type :Benefit ;
+    rdfs:label "Espaço Performance" ;
+    rdfs:comment "Ambiente com infraestrutura de alta performance para treinos intensos." .
+
+:Benefit_PlataformaTreino rdf:type :Benefit ;
+    rdfs:label "Plataforma/App de Treino" ;
+    rdfs:comment "Acesso à plataforma digital com treinos e monitoramento de performance." .
+
+# INDIVÍDUOS – Formas de Pagamento
+
+:PaymentMethod_CartaoCredito rdf:type :PaymentMethod ;
+    rdfs:label "Cartão de Crédito Recorrente" ;
+    rdfs:comment "Pagamento recorrente mensal, semelhante ao modelo Netflix, sem comprometer o limite do cartão." .
+
+:PaymentMethod_PIX rdf:type :PaymentMethod ;
+    rdfs:label "PIX (para parcelas vencidas)" ;
+    rdfs:comment "Aceito para o pagamento de parcelas vencidas ou a vencer; exige cartão registrado no cadastro." .
+
+# INDIVÍDUOS – Pratique Nutri Service
+
+:PratiqueNutriService_Combo rdf:type :PratiqueNutriService ;
+    rdfs:label "Pratique Nutri (Incluso no Combo)" ;
+    rdfs:comment "Primeira consulta via vídeo chamada (App Dietbox) com nutricionista esportivo; plano alimentar enviado em até 72 horas; consultas a cada 45 dias." ;
+    :hasLink <https://pratiquefitness.com.br/diagnose> .
+
+:PratiqueNutriService_Individual rdf:type :PratiqueNutriService ;
+    rdfs:label "Pratique Nutri (Avulso)" ;
+    rdfs:comment "Primeira consulta: R$89,90; Consultas subsequentes: R$19,90 mensais." .
+
+# INDIVÍDUOS – Modalidades
+
+:Modalidade_Musculacao rdf:type :Modalidade ;
+    rdfs:label "Musculação" ;
+    rdfs:comment "Exercícios de musculação disponíveis em diversas unidades." .
+
+:Modalidade_Danca rdf:type :Modalidade ;
+    rdfs:label "Dança" ;
+    rdfs:comment "Aulas de dança, conforme disponibilidade da unidade." .
+
+:Modalidade_Funcional rdf:type :Modalidade ;
+    rdfs:label "Training (Funcional)" ;
+    rdfs:comment "Treino funcional adaptado às necessidades do aluno." .
+
+:Modalidade_Jump rdf:type :Modalidade ;
+    rdfs:label "Jump" ;
+    rdfs:comment "Treino com foco em saltos e agilidade." .
+
+:Modalidade_Core rdf:type :Modalidade ;
+    rdfs:label "Core (Abdominal/Mobilidade/Fortalecimento)" ;
+    rdfs:comment "Exercícios focados na região central do corpo." .
+
+:Modalidade_Cycle rdf:type :Modalidade ;
+    rdfs:label "Cycle (Spinning)" ;
+    rdfs:comment "Aulas de spinning (Cycle) com bikes específicas." .
+
+:Modalidade_Bumbum rdf:type :Modalidade ;
+    rdfs:label "Bumbum" ;
+    rdfs:comment "Treino focado no desenvolvimento dos músculos das pernas e glúteos." .
+
+:Modalidade_Natacao rdf:type :Modalidade ;
+    rdfs:label "Natação" ;
+    rdfs:comment "Modalidade aquática com turmas: Natação Baby (6 meses a 3 anos), Infantil (4 a 15 anos) e Adulto/Hidroginástica (a partir de 16 anos)." .
+
+:Modalidade_Hidroginastica rdf:type :Modalidade ;
+    rdfs:label "Hidroginástica" ;
+    rdfs:comment "Aulas de hidroginástica para diferentes faixas etárias." .
+
+:Modalidade_MuayThai rdf:type :Modalidade ;
+    rdfs:label "Muay Thai" ;
+    rdfs:comment """Arte marcial tailandesa que utiliza técnicas de golpes em pé, incluindo socos, chutes, cotoveladas e joelhadas.
+    Benefícios:
+    - Desenvolvimento de força e resistência física
+    - Aprimoramento da coordenação motora
+    - Redução do estresse
+    - Melhora do condicionamento cardiovascular
+    - Auxílio na perda de peso
+    - Desenvolvimento de autoconfiança e disciplina""" ;
+    :hasType :Tipo_Regular ;
+    :offeredAt :Unidade_FernaoDias, :Unidade_LagoaBH, :Unidade_OuroPretoBH,
+               :Unidade_Pampulha, :Unidade_SantaInes, :Unidade_Cachoeirinha .
+
+:Modalidade_MuayThaiTerceirizado rdf:type :Modalidade ;
+    rdfs:label "Muay Thai Terceirizado" ;
+    rdfs:comment """Arte marcial tailandesa oferecida por instrutores terceirizados especializados.
+    Características:
+    - Aulas com professores certificados
+    - Grupos reduzidos
+    - Horários flexíveis
+    - Programas para iniciantes e avançados
+    - Acompanhamento personalizado
+    - Valores e programação específicos por unidade""" ;
+    :hasType :Tipo_Terceirizada ;
+    :offeredAt :Unidade_CidadeNova, :Unidade_Floresta, :Unidade_Heliopolis,
+               :Unidade_SantaMonica, :Unidade_NovaFloresta .
+
+:Modalidade_Taekwondo rdf:type :Modalidade ;
+    rdfs:label "Taekwondo" ;
+    rdfs:comment """Arte marcial coreana conhecida por seus chutes acrobáticos e técnicas de defesa pessoal.
+    Benefícios:
+    - Desenvolvimento da flexibilidade
+    - Melhora do equilíbrio e coordenação
+    - Fortalecimento muscular
+    - Aumento da concentração
+    - Desenvolvimento de disciplina e respeito
+    - Sistema de graduação por faixas
+    
+    Características das Aulas:
+    - Treinamento técnico progressivo
+    - Práticas de formas (poomsae)
+    - Treinos de combate (kyorugi)
+    - Exercícios de quebramento
+    - Preparação física específica
+    - Filosofia e valores marciais""" ;
+    :hasType :Tipo_Terceirizada ;
+    :offeredAt :Unidade_Cachoeirinha, :Unidade_CeuAzul, :Unidade_FernaoDias,
+               :Unidade_Guarani, :Unidade_SaoBenedito, :Unidade_Pampulha,
+               :Unidade_NovaFloresta, :Unidade_Heliopolis .
+
+:Modalidade_Pilates rdf:type :Modalidade ;
+    rdfs:label "Pilates" ;
+    rdfs:comment """Método de condicionamento físico e mental que trabalha o corpo como um todo.
+    Benefícios:
+    - Melhora da postura
+    - Aumento da flexibilidade
+    - Fortalecimento do core
+    - Alívio de dores nas costas
+    - Prevenção de lesões
+    - Redução do estresse
+    
+    Características das Aulas:
+    - Exercícios de baixo impacto
+    - Foco na respiração
+    - Controle de movimentos
+    - Precisão nas execuções
+    - Acompanhamento individualizado
+    - Equipamentos específicos
+    
+    Modalidades Disponíveis:
+    - Pilates Solo (Mat Pilates)
+    - Pilates com Aparelhos
+    - Aulas em grupo ou individuais
+    
+    Recomendado para:
+    - Reabilitação física
+    - Gestantes
+    - Idosos
+    - Atletas
+    - Pessoas com problemas posturais
+    - Público em geral""" ;
+    :hasType :Tipo_Terceirizada ;
+    :offeredAt :Unidade_CidadeNova, :Unidade_NovaFloresta, :Unidade_Heliopolis,
+               :Unidade_Industrial, :Unidade_Mangabeiras, :Unidade_Pampulha,
+               :Unidade_SagradaFamilia, :Unidade_SantaEfigenia, :Unidade_SaoBenedito,
+               :Unidade_SaoBento .
+
+:Modalidade_JumperFit rdf:type :Modalidade ;
+    rdfs:label "Jumper Fit" ;
+    rdfs:comment """Recreação esportiva desenvolvida por educadores físicos com foco em diversão e saúde.
+    
+    Características:
+    - Idade mínima: 3 anos
+    - Peso máximo: 120 kg por pessoa
+    - Crianças de 3 a 5 anos devem ter acompanhamento adulto
+    
+    Benefícios:
+    - Movimentação corporal divertida
+    - Promoção de vida mais saudável
+    - Desenvolvimento motor
+    - Socialização
+    
+    Regras de Segurança:
+    - Assinatura de termo de responsabilidade obrigatória
+    - Aterrissagem sempre com os dois pés
+    - Máximo de duas cambalhotas consecutivas
+    - Proibido uso de objetos pontiagudos ou joias
+    - Proibido consumo de alimentos durante as atividades
+    
+    Contraindicações:
+    - Gestantes
+    - Pessoas com problemas de saúde específicos
+    - Pessoas sob efeito de álcool/drogas""" ;
+    :hasType :Tipo_Regular ;
+    :offeredAt :Unidade_PedraBranca .
+
+:Modalidade_PersonalClass rdf:type :Modalidade ;
+    rdfs:label "Personal Class" ;
+    rdfs:comment """Programa de treinamento personalizado com sessões rápidas e intensas.
+    
+    Características:
+    - Treinamentos personalizados
+    - Intensidade controlada
+    - Foco na saúde das articulações
+    - Atendimento individualizado
+    - Otimização do tempo
+    
+    Benefícios:
+    - Aplicativo de monitoramento
+    - Avaliação física mensal com bioimpedância
+    - Avaliação funcional mensal
+    - Flexibilidade de agendamento
+    - Treinamentos dinâmicos
+    - Acesso múltiplas unidades
+    
+    Metodologia:
+    - Sessões personalizadas
+    - Adaptação às necessidades individuais
+    - Foco em resultados rápidos
+    - Proteção articular
+    - Treinos eficientes""" ;
+    :hasType :Tipo_Regular ;
+    :offeredAt :Unidade_AlipioDeMelo, :Unidade_Cabral, :Unidade_Cachoeirinha,
+               :Unidade_Castelo, :Unidade_CeuAzul, :Unidade_CidadeNova,
+               :Unidade_FernaoDias, :Unidade_Guarani, :Unidade_Industrial,
+               :Unidade_Jaragua, :Unidade_Pampulha, :Unidade_SagradaFamilia,
+               :Unidade_SantaEfigenia, :Unidade_Eldorado, :Unidade_Serrano,
+               :Unidade_SantaInes2, :Unidade_NovaFloresta, :Unidade_MartMinas,
+               :Unidade_Tirol, :Unidade_BetimSaoCaetano, :Unidade_BetimDecamao,
+               :Unidade_PedraBranca .
+
+# INDIVÍDUOS – Piscinas
+
+:Pool_GuaraniMusculacao rdf:type :Pool ;
+    rdfs:label "Piscina Guarani (CT Musculação)" ;
+    rdfs:comment "Dimensões: 15m x 7m x 1,35m. Tratamento com ozônio e cloro." ;
+    :associatedWith :Unidade_Guarani .
+
+:Pool_GuaraniNatacao rdf:type :Pool ;
+    rdfs:label "Piscina Guarani (CT Natação)" ;
+    rdfs:comment "Dimensões: 25m x 12.5m (parte rasa: 1,40m; parte funda: 1,80m)." ;
+    :associatedWith :Unidade_Guarani .
+
+:Pool_SagradaFamilia rdf:type :Pool ;
+    rdfs:label "Piscina Sagrada Família" ;
+    rdfs:comment "Dimensões: 20m x 8m x 1,40m." ;
+    :associatedWith :Unidade_SagradaFamilia .
+
+# INDIVÍDUOS – Bike Rental (PowerCycle)
+
+:BikeRental_Semestral rdf:type :BikeRental ;
+    rdfs:label "PowerCycle - Plano Semestral" ;
+    rdfs:comment "6 parcelas de R$149.90. Auto renovável após o término. Benefícios: App de Aulas, Manutenção e Frete incluso." .
+
+:BikeRental_Quadrimestral rdf:type :BikeRental ;
+    rdfs:label "PowerCycle - Plano Quadrimestral" ;
+    rdfs:comment "4 parcelas de R$169.90 com renovação automática. Inclui consultas a cada 45 dias e acompanhamento nutricional via vídeo chamada." .
+
+:BikeRental_Trimestral rdf:type :BikeRental ;
+    rdfs:label "PowerCycle - Plano Trimestral" ;
+    rdfs:comment "3 parcelas de R$149.90, auto renovável, com manutenção e frete inclusos." .
+
+:BikeRental_Description rdf:type :BikeRental ;
+    rdfs:label "Bike Spinning Profissional Total Health" ;
+    rdfs:comment "Dimensões: 55 x 121 x 107 cm; Peso: 60 kg; Carga máxima: 150 kg; Roda de inércia: 25kg; sem pedal de clip (bike de corrente)." .
+
+# INDIVÍDUOS – Personal Externo Service
+
+:PersonalExterno_Geral rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Geral" ;
+    rdfs:comment "Taxa única: R$99.90 mensais. Permite atender alunos em todas as unidades (exceto Unidade Funcionários, Itabira e Espaço Prime). Sem taxa de garantia nem adesão. Pagamento recorrente com opção de pausa." ;
+    :operatesIn :Unidade_SaoGeraldo ;
+    :operatesIn :Unidade_Trindade ;
+    :operatesIn :Unidade_Funcionarios .
+
+:PersonalExterno_Prime rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Unidades Prime" ;
+    rdfs:comment "Taxa única: R$109.90 mensais. Permite atender alunos em todas as unidades (exceto Unidade Funcionários). Pagamento recorrente com pausa opcional." ;
+    :operatesIn :Unidade_Funcionarios ;
+    :operatesIn :Unidade_Mangabeiras .
+
+:PersonalExterno_Itabira rdf:type :PersonalExternoService ;
+    rdfs:label "Personal Externo - Unidade Itabira" ;
+    rdfs:comment "Taxa única: R$199.90 mensais. Permite atender alunos em todas as unidades, exceto o espaço de personal em Itabira. Pagamento recorrente com opção de pausa." ;
+    :operatesIn :Unidade_Itabira .
+
+# INDIVÍDUOS – Personal Class Service
+
+:PersonalClass_Min8Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 8 Créditos (Minas Gerais)" ;
+    rdfs:comment "Duração: 1 mês. Valor: R$237.60. Inclui avaliação de bioimpedância mensal e acompanhamento personalizado." ;
+    :availableAtService :Unidade_SaoGeraldo ;
+    :availableAtService :Unidade_Trindade .
+
+:PersonalClass_Min12Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 12 Créditos (Minas Gerais)" ;
+    rdfs:comment "Duração: 1 mês. Valor: R$298.60." ;
+    :availableAtService :Unidade_SaoGeraldo ;
+    :availableAtService :Unidade_Trindade .
+
+:PersonalClass_20Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 20 Créditos (2 meses)" ;
+    rdfs:comment "Valor parcelado: R$231.00 por mês." ;
+    :availableAtService :Unidade_SaoGeraldo .
+
+:PersonalClass_30Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 30 Créditos (3 meses)" ;
+    rdfs:comment "Valor parcelado: R$209.00 por mês." ;
+    :availableAtService :Unidade_SaoGeraldo .
+
+:PersonalClass_36Creditos rdf:type :PersonalClassService ;
+    rdfs:label "Personal Class - 36 Créditos (3 meses)" ;
+    rdfs:comment "Valor parcelado: R$299.00 por mês." ;
+    :availableAtService :Unidade_SaoGeraldo .
+
+# INDIVÍDUOS – Jumper Fit Service
+
+:JumperFit_UnidadePedraBranca rdf:type :JumperFitService ;
+    rdfs:label "Jumper Fit - Unidade Pedra Branca" ;
+    rdfs:comment "Disponível apenas na Unidade Pedra Branca. Mensal ilimitado R$99.90 (Pratique). Para não clientes: R$159.90 mensais. Crédito avulso: R$59.90. Seg-Sex 10h–22h, Sáb 9h–21h, Dom 15h–20h." .
+
+# INDIVÍDUOS – Gympass/Wellub
+
+:Gympass_Wellub rdf:type owl:NamedIndividual ;
+    rdfs:label "Gympass/Wellub" ;
+    rdfs:comment "Integração: Check-in via App; acesso à musculação e aulas coletivas a partir do Plano Basic+; unidades disponíveis: Prime e Premium (exceto Itabira); após o 12º acesso no mês, o usuário ganha um Exame de Bioimpedância e acesso ao Pratique Nutri por R$19.90 mensais." .
+
+# INDIVÍDUOS – Exame de Bioimpedância (Avulso)
+
+:ExameBioimpedancia_Avulso rdf:type :ExameBioimpedancia ;
+    rdfs:label "Exame de Bioimpedância Avulso" ;
+    rdfs:comment "Exame avalia composição corporal (músculo, gordura, água, minerais). Valor: R$99.90. Agendamento, cancelamento e remarcação via https://pratiquefitness.com.br/exame." ;
+    :hasLink <https://pratiquefitness.com.br/exame> .
+
+# INDIVÍDUOS – History
+
+:History_Practice rdf:type :History ;
+    rdfs:label "História da Academia Pratique" ;
+    :hasHistory "A Academia Pratique cresceu rapidamente com mais de 90 unidades em Minas Gerais e Santa Catarina, expandindo para 40 novas unidades em 2024. Baseada na Metodologia PowerGym, a empresa valoriza seus mais de 2.500 colaboradores (dos quais 250 são sócios operadores), com uma cultura de meritocracia e gestão inovadora liderada por Harley Tadeu." .
+
+# OBSERVAÇÕES GERAIS (ex.: Cancelamento, Pagamento, Piscina, etc.)
+
+:CancelamentoSemMulta rdf:type owl:NamedIndividual ;
+    rdfs:label "Cancelamento e Trancamento" ;
+    rdfs:comment """Para cancelar ou trancar seu plano, preencha e assine o Formulário de Cancelamento/Trancamento disponível no nosso site ou no app Pratique Em Casa.
+
+Cancelamento:
+•⁠  ⁠Faça a solicitação com 15 dias de antecedência para evitar cobranças futuras e garantir o processamento correto.
+•⁠  ⁠Se houver cobrança nesse período, você pode continuar usando a academia até a conclusão do pedido.
+
+Trancamento:
+•⁠  ⁠Ao trancar, você mantém todos os benefícios e ainda ganha um bônus de R$50,00 para reativar seu plano no retorno.""" ;
+    :hasCancellationForm <https://pratiquefitness.com.br/cancelamento/> ;
+    :hasNoticePeriod "15 dias" ;
+    :hasLockBonus "50.00"^^xsd:decimal .
+
+:hasCancellationForm rdf:type owl:ObjectProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range rdfs:Resource ;
+    rdfs:label "formulário de cancelamento" ;
+    rdfs:comment "Link para o formulário de cancelamento/trancamento" .
+
+:hasNoticePeriod rdf:type owl:DatatypeProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string ;
+    rdfs:label "período de aviso prévio" ;
+    rdfs:comment "Período necessário de antecedência para solicitar cancelamento" .
+
+:hasLockBonus rdf:type owl:DatatypeProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "bônus de trancamento" ;
+    rdfs:comment "Valor do bônus oferecido ao reativar o plano após trancamento" .
+
+:InformacoesPagamento rdf:type owl:NamedIndividual ;
+    rdfs:label "Informações sobre Pagamento" ;
+    rdfs:comment "Pagamento é recorrente, via cartão de crédito (modelo Netflix) com cobrança mensal. O valor não compromete o limite do cartão para 12 meses. PIX aceito só para parcelas vencidas/a vencer." .
+
+:InformacoesPiscina rdf:type owl:NamedIndividual ;
+    rdfs:label "Informações sobre Piscinas" ;
+    rdfs:comment "As piscinas são aquecidas; em algumas unidades (ex.: Cidade Nova e Industrial) não são cobertas. Tratamento: Ozônio e Cloro. As dimensões variam conforme a unidade, com horários de funcionamento em geral entre 06h e 22h." .
+
+# INFORMAÇÕES DE CONTATO
+
+:GeneralSupport rdf:type owl:NamedIndividual ;
+    rdfs:label "Suporte Geral" ;
+    rdfs:comment """Para outras informações e os seguintes assuntos, entre em contato com nossa central no WhatsApp: (31) 4141-1962:
+    - Planos de natação adulto
+    - Planos de natação infantil
+    - Power Cycle
+    - Personal Class
+    - Jumper Fit""" ;
+    :hasContactNumber "(31) 4141-1962" ;
+    :hasContactChannel "WhatsApp" ;
+    :handlesInquiries """
+    - Informações sobre planos de natação adulto
+    - Informações sobre planos de natação infantil
+    - Informações sobre Power Cycle
+    - Informações sobre Personal Class
+    - Informações sobre Jumper Fit
+    """ .
+
+:handlesInquiries rdf:type owl:DatatypeProperty ;
+    rdfs:domain :GeneralSupport ;
+    rdfs:range xsd:string ;
+    rdfs:label "assuntos atendidos" ;
+    rdfs:comment "Lista de assuntos específicos atendidos pelo canal de suporte" .
+
+:hasContactNumber rdf:type owl:DatatypeProperty ;
+    rdfs:domain :GeneralSupport ;
+    rdfs:range xsd:string ;
+    rdfs:label "número de contato" .
+
+:hasContactChannel rdf:type owl:DatatypeProperty ;
+    rdfs:domain :GeneralSupport ;
+    rdfs:range xsd:string ;
+    rdfs:label "canal de contato" .
+
+:AgePolicy rdf:type owl:NamedIndividual ;
+    rdfs:label "Política de Idade" ;
+    rdfs:comment """Regras para menores de idade:
+    - A partir de 14 anos: Permitido treinar
+    - Menores de 14 anos: Necessário apresentar atestado pediátrico e acompanhamento dos pais ou responsáveis""" .
+
+:hasMinimumAge rdf:type owl:DatatypeProperty ;
+    rdfs:domain :AgePolicy ;
+    rdfs:range xsd:integer ;
+    rdfs:label "idade mínima" ;
+    rdfs:comment "Idade mínima para treinar sem restrições adicionais" .
+
+:requiresParentalSupervision rdf:type owl:DatatypeProperty ;
+    rdfs:domain :AgePolicy ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "requer supervisão dos pais" ;
+    rdfs:comment "Indica se é necessário acompanhamento dos pais ou responsáveis" .
+
+:requiresPediatricCertificate rdf:type owl:DatatypeProperty ;
+    rdfs:domain :AgePolicy ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "requer atestado pediátrico" ;
+    rdfs:comment "Indica se é necessário apresentar atestado médico pediátrico" .
+
+:ServiceUnion rdf:type owl:Class ;
+    owl:unionOf (:PratiqueNutriService :ExameBioimpedancia) .
+
+# Pool Physical Properties
+:hasLength rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "comprimento" ;
+    rdfs:comment "Comprimento da piscina em metros" .
+
+:hasWidth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "largura" ;
+    rdfs:comment "Largura da piscina em metros" .
+
+:hasDepth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "profundidade" ;
+    rdfs:comment "Profundidade da piscina em metros" .
+
+:hasShallowEndDepth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "profundidade parte rasa" .
+
+:hasDeepEndDepth rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "profundidade parte funda" .
+
+# Pool Characteristics
+:isCovered rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "coberta" ;
+    rdfs:comment "Indica se a piscina é coberta" .
+
+:isHeated rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "aquecida" ;
+    rdfs:comment "Indica se a piscina é aquecida" .
+
+# Pool Treatment
+:TreatmentType rdf:type owl:Class ;
+    rdfs:label "Tipo de Tratamento" .
+
+:hasTreatment rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :TreatmentType ;
+    rdfs:label "tipo de tratamento" .
+
+:TreatmentOzone rdf:type :TreatmentType ;
+    rdfs:label "Ozônio" .
+
+:TreatmentChlorine rdf:type :TreatmentType ;
+    rdfs:label "Cloro" .
+
+# Pool Schedule
+:PoolSchedule rdf:type owl:Class ;
+    rdfs:label "Horário da Piscina" .
+
+:hasPoolSchedule rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :PoolSchedule .
+
+:openingTime rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PoolSchedule ;
+    rdfs:range xsd:time ;
+    rdfs:label "horário de abertura" .
+
+:closingTime rdf:type owl:DatatypeProperty ;
+    rdfs:domain :PoolSchedule ;
+    rdfs:range xsd:time ;
+    rdfs:label "horário de fechamento" .
+
+# Pool Activities
+:PoolActivity rdf:type owl:Class ;
+    rdfs:subClassOf :Modalidade ;
+    rdfs:label "Atividade Aquática" .
+
+:supportsActivity rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :PoolActivity .
+
+:NatacaoBaby rdf:type :PoolActivity ;
+    rdfs:label "Natação Baby" ;
+    :hasMinAge "0.5"^^xsd:decimal ;
+    :hasMaxAge "3"^^xsd:decimal .
+
+:NatacaoInfantil rdf:type :PoolActivity ;
+    rdfs:label "Natação Infantil" ;
+    :hasMinAge "4"^^xsd:decimal ;
+    :hasMaxAge "15"^^xsd:decimal .
+
+:NatacaoAdulto rdf:type :PoolActivity ;
+    rdfs:label "Natação Adulto" ;
+    :hasMinAge "16"^^xsd:decimal .
+
+:Hidroginastica rdf:type :PoolActivity ;
+    rdfs:label "Hidroginástica" ;
+    :hasMinAge "16"^^xsd:decimal .
+
+# Pool Requirements
+:PoolRequirement rdf:type owl:Class ;
+    rdfs:label "Requisito para Uso da Piscina" .
+
+:hasRequirement rdf:type owl:ObjectProperty ;
+    rdfs:domain :Pool ;
+    rdfs:range :PoolRequirement .
+
+:RequirementTouca rdf:type :PoolRequirement ;
+    rdfs:label "Touca" .
+
+:RequirementSunga rdf:type :PoolRequirement ;
+    rdfs:label "Sunga" .
+
+:RequirementMaio rdf:type :PoolRequirement ;
+    rdfs:label "Maiô" .
+
+:RequirementOculos rdf:type :PoolRequirement ;
+    rdfs:label "Óculos" .
+
+# Pool-Unit Relationships
+:hasPool rdf:type owl:ObjectProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range :Pool ;
+    rdfs:label "possui piscina" ;
+    rdfs:comment "Relaciona uma unidade à sua piscina" .
+
+:isPoolOf rdf:type owl:ObjectProperty ;
+    owl:inverseOf :hasPool ;
+    rdfs:domain :Pool ;
+    rdfs:range :Unidade ;
+    rdfs:label "piscina da unidade" .
+
+# Helper Property
+:hasSwimmingFacilities rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Unidade ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "possui piscina" ;
+    rdfs:comment "Indica se a unidade possui instalações de natação" .
+
+# Pool Instances for all units with pools
+
+:Pool_GuaraniMusculacao rdf:type :Pool ;
+    rdfs:label "Piscina Guarani (CT Musculação)" ;
+    :hasLength "15.0"^^xsd:decimal ;
+    :hasWidth "7.0"^^xsd:decimal ;
+    :hasDepth "1.35"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Guarani .
+
+:Pool_GuaraniNatacao rdf:type :Pool ;
+    rdfs:label "Piscina Guarani (CT Natação)" ;
+    :hasLength "25.0"^^xsd:decimal ;
+    :hasWidth "12.5"^^xsd:decimal ;
+    :hasShallowEndDepth "1.40"^^xsd:decimal ;
+    :hasDeepEndDepth "1.80"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Guarani .
+
+:Pool_SagradaFamilia rdf:type :Pool ;
+    rdfs:label "Piscina Sagrada Família" ;
+    :hasLength "20.0"^^xsd:decimal ;
+    :hasWidth "8.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_SagradaFamilia .
+
+:Pool_CidadeNova rdf:type :Pool ;
+    rdfs:label "Piscina Cidade Nova" ;
+    :hasLength "25.0"^^xsd:decimal ;
+    :hasWidth "12.5"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "false"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_CidadeNova .
+
+:Pool_Cachoeirinha rdf:type :Pool ;
+    rdfs:label "Piscina Cachoeirinha" ;
+    :hasLength "15.0"^^xsd:decimal ;
+    :hasWidth "8.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Cachoeirinha .
+
+:Pool_SantaEfigenia rdf:type :Pool ;
+    rdfs:label "Piscina Santa Efigênia" ;
+    :hasLength "20.0"^^xsd:decimal ;
+    :hasWidth "12.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_SantaEfigenia .
+
+:Pool_SeteLagoas rdf:type :Pool ;
+    rdfs:label "Piscina Sete Lagoas" ;
+    :hasLength "20.0"^^xsd:decimal ;
+    :hasWidth "8.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_SeteLagoas .
+
+:Pool_NovaFloresta rdf:type :Pool ;
+    rdfs:label "Piscina Nova Floresta" ;
+    :hasLength "13.0"^^xsd:decimal ;
+    :hasWidth "7.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_NovaFloresta .
+
+:Pool_Industrial rdf:type :Pool ;
+    rdfs:label "Piscina Industrial" ;
+    :hasLength "20.0"^^xsd:decimal ;
+    :hasWidth "10.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "false"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Industrial .
+
+:Pool_Cardoso rdf:type :Pool ;
+    rdfs:label "Piscina Cardoso" ;
+    :hasLength "12.0"^^xsd:decimal ;
+    :hasWidth "10.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Cardoso .
+
+:Pool_SaoBento rdf:type :Pool ;
+    rdfs:label "Piscina São Bento" ;
+    :hasLength "20.0"^^xsd:decimal ;
+    :hasWidth "10.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_SaoBento .
+
+:Pool_Goiania rdf:type :Pool ;
+    rdfs:label "Piscina Goiânia" ;
+    :hasLength "12.0"^^xsd:decimal ;
+    :hasWidth "8.0"^^xsd:decimal ;
+    :hasDepth "1.40"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Goiania .
+
+:Pool_Itabira rdf:type :Pool ;
+    rdfs:label "Piscina Itabira" ;
+    :hasLength "15.0"^^xsd:decimal ;
+    :hasWidth "13.0"^^xsd:decimal ;
+    :hasDepth "1.30"^^xsd:decimal ;
+    :isCovered "true"^^xsd:boolean ;
+    :isHeated "true"^^xsd:boolean ;
+    :hasTreatment :TreatmentOzone, :TreatmentChlorine ;
+    :hasRequirement :RequirementTouca, :RequirementSunga, :RequirementMaio, :RequirementOculos ;
+    :supportsActivity :NatacaoBaby, :NatacaoInfantil, :NatacaoAdulto, :Hidroginastica ;
+    :isPoolOf :Unidade_Itabira .
+
+# Add hasSwimmingFacilities to all units that have pools
+:Unidade_Guarani :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_SagradaFamilia :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_CidadeNova :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_Cachoeirinha :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_SantaEfigenia :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_SeteLagoas :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_NovaFloresta :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_Industrial :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_Cardoso :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_SaoBento :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_Goiania :hasSwimmingFacilities "true"^^xsd:boolean .
+:Unidade_Itabira :hasSwimmingFacilities "true"^^xsd:boolean .
+
+# Property Characteristics
+
+# Transitive Property
+:hasRequirement rdf:type owl:TransitiveObjectProperty .
+
+# Functional Properties
+:hasType rdf:type owl:FunctionalObjectProperty .
+:isPoolOf rdf:type owl:FunctionalObjectProperty .
+
+# Property Chains
+:hasRequirement owl:propertyChainAxiom ( :hasPool :hasRequirement ) .
+:offeredAt owl:propertyChainAxiom ( :hasPool :supportsActivity ) .
+
+# Disjoint Properties
+:associatedWith owl:propertyDisjointWith :operatesIn .
+
+# Asymmetric Properties
+:hasPool rdf:type owl:AsymmetricObjectProperty .
+:includesBenefit rdf:type owl:AsymmetricObjectProperty .
+
+# Irreflexive Properties
+:hasPool rdf:type owl:IrreflexiveObjectProperty .
+:includesBenefit rdf:type owl:IrreflexiveObjectProperty .
+:isPoolOf rdf:type owl:IrreflexiveObjectProperty .
+
+# Inverse Property Definition
+:hasModalidade rdf:type owl:ObjectProperty ;
+    owl:inverseOf :offeredAt ;
+    rdfs:domain :Unidade ;
+    rdfs:range :Modalidade ;
+    rdfs:label "tem modalidade" ;
+    rdfs:comment "Indica que a unidade oferece determinada modalidade" .
+
+# Activities with Relationships
+:Modalidade_MuayThai rdf:type :Modalidade ;
+    rdfs:label "Muay Thai" ;
+    :hasType :Tipo_Regular ;
+    :offeredAt :Unidade_FernaoDias, :Unidade_LagoaBH, :Unidade_OuroPretoBH,
+               :Unidade_Pampulha, :Unidade_SantaInes, :Unidade_Cachoeirinha .
+
+:Modalidade_MuayThaiTerceirizado rdf:type :Modalidade ;
+    rdfs:label "Muay Thai Terceirizado" ;
+    :hasType :Tipo_Terceirizada ;
+    :offeredAt :Unidade_CidadeNova, :Unidade_Floresta, :Unidade_Heliopolis,
+               :Unidade_SantaMonica, :Unidade_NovaFloresta .
+
+:Modalidade_Taekwondo rdf:type :Modalidade ;
+    rdfs:label "Taekwondo" ;
+    :hasType :Tipo_Terceirizada ;
+    :offeredAt :Unidade_Cachoeirinha, :Unidade_CeuAzul, :Unidade_FernaoDias,
+               :Unidade_Guarani, :Unidade_SaoBenedito, :Unidade_Pampulha,
+               :Unidade_NovaFloresta, :Unidade_Heliopolis .
+
+:Modalidade_Pilates rdf:type :Modalidade ;
+    rdfs:label "Pilates" ;
+    :hasType :Tipo_Terceirizada ;
+    :offeredAt :Unidade_CidadeNova, :Unidade_NovaFloresta, :Unidade_Heliopolis,
+               :Unidade_Industrial, :Unidade_Mangabeiras, :Unidade_Pampulha,
+               :Unidade_SagradaFamilia, :Unidade_SantaEfigenia, :Unidade_SaoBenedito,
+               :Unidade_SaoBento .
+
+# Units with Inverse Relationships
+:Unidade_FernaoDias :hasModalidade :Modalidade_MuayThai, :Modalidade_Taekwondo .
+:Unidade_LagoaBH :hasModalidade :Modalidade_MuayThai .
+:Unidade_OuroPretoBH :hasModalidade :Modalidade_MuayThai .
+:Unidade_Pampulha :hasModalidade :Modalidade_MuayThai, :Modalidade_Taekwondo, :Modalidade_Pilates .
+:Unidade_SantaInes :hasModalidade :Modalidade_MuayThai .
+:Unidade_Cachoeirinha :hasModalidade :Modalidade_MuayThai, :Modalidade_Taekwondo .
+:Unidade_CidadeNova :hasModalidade :Modalidade_MuayThaiTerceirizado, :Modalidade_Pilates .
+:Unidade_Floresta :hasModalidade :Modalidade_MuayThaiTerceirizado .
+:Unidade_Heliopolis :hasModalidade :Modalidade_MuayThaiTerceirizado, :Modalidade_Taekwondo, :Modalidade_Pilates .
+:Unidade_SantaMonica :hasModalidade :Modalidade_MuayThaiTerceirizado .
+:Unidade_NovaFloresta :hasModalidade :Modalidade_MuayThaiTerceirizado, :Modalidade_Taekwondo, :Modalidade_Pilates .
+:Unidade_CeuAzul :hasModalidade :Modalidade_Taekwondo .
+:Unidade_Guarani :hasModalidade :Modalidade_Taekwondo .
+:Unidade_SaoBenedito :hasModalidade :Modalidade_Taekwondo, :Modalidade_Pilates .
+:Unidade_Industrial :hasModalidade :Modalidade_Pilates .
+:Unidade_Mangabeiras :hasModalidade :Modalidade_Pilates .
+:Unidade_SagradaFamilia :hasModalidade :Modalidade_Pilates .
+:Unidade_SantaEfigenia :hasModalidade :Modalidade_Pilates .
+:Unidade_SaoBento :hasModalidade :Modalidade_Pilates .

@@ -1,0 +1,83 @@
+{
+    "created_at": 1739554222,
+    "default_sorting_field": "",
+    "enable_nested_fields": false,
+    "fields": [
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "name",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "recurrence",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "price",
+            "optional": false,
+            "sort": true,
+            "stem": false,
+            "store": true,
+            "type": "float"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "pricing_detail",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "comment",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "benefits",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string[]"
+        }
+    ],
+    "name": "planos",
+    "num_documents": 13,
+    "symbols_to_index": [],
+    "token_separators": []
+}

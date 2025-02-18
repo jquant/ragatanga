@@ -1,0 +1,119 @@
+{
+    "created_at": 1739554343,
+    "default_sorting_field": "",
+    "enable_nested_fields": false,
+    "fields": [
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "unit_id",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "unit_name",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "unit_city",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "unit_state",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "unit_type",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": true,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "plan_id",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "plan_name",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "local_price",
+            "optional": false,
+            "sort": true,
+            "stem": false,
+            "store": true,
+            "type": "float"
+        },
+        {
+            "facet": false,
+            "index": true,
+            "infix": false,
+            "locale": "",
+            "name": "local_comment",
+            "optional": false,
+            "sort": false,
+            "stem": false,
+            "store": true,
+            "type": "string"
+        }
+    ],
+    "name": "unit_plans",
+    "num_documents": 1508,
+    "symbols_to_index": [],
+    "token_separators": []
+}
