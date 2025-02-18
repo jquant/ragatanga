@@ -57,13 +57,11 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     retrieved_facts_sparql: List[str]
     retrieved_facts_semantic: List[str]
+    retrieved_facts: List[str]
     answer: str
 
-    @computed_field
-    @property
-    def retrieved_facts(self) -> List[str]:
-        return self.retrieved_facts_sparql + self.retrieved_facts_semantic
-    
+    class Config:
+        allow_mutation = True    
 
 class Query(BaseModel):
     """
@@ -644,11 +642,20 @@ async def generate_answer(query: str, retrieved_texts: List[str]) -> QueryRespon
         "both types of results are clearly presented in your response."
     )
 
-    response = await asyncio.to_thread(
+    # Create response object with all fields initialized
+    response = QueryResponse(
+        retrieved_facts=retrieved_texts,
+        retrieved_facts_sparql=sparql_facts,
+        retrieved_facts_semantic=semantic_facts,
+        answer=""  # Will be updated after LLM call
+    )
+
+    # Get LLM response
+    llm_response = await asyncio.to_thread(
         client.create,
         max_retries=3,
-        response_model=QueryResponse,
         model=GPT_MODEL,
+        response_model=QueryResponse,
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}
@@ -656,28 +663,9 @@ async def generate_answer(query: str, retrieved_texts: List[str]) -> QueryRespon
         temperature=0.2
     )
 
-    # Set all the response fields
-    response.retrieved_facts = retrieved_texts
-    response.retrieved_facts_sparql = sparql_facts
-    response.retrieved_facts_semantic = semantic_facts
+    # Update answer
 
-    if not any(marker in response.answer for marker in ['##', '#', '*', '-']):
-        formatted_answer = "## Retrieved Information\n\n"
-        
-        if sparql_facts:
-            formatted_answer += "### SPARQL Results\n\n"
-            for fact in sparql_facts:
-                formatted_answer += f"* {fact}\n"
-            formatted_answer += "\n"
-            
-        if semantic_facts:
-            formatted_answer += "### Semantic Search Results\n\n"
-            for fact in semantic_facts:
-                formatted_answer += f"* {fact}\n"
-        
-        response.answer = formatted_answer
-
-    return response
+    return llm_response.model_dump()
 
 ###############################################################################
 # FASTAPI ENDPOINTS
