@@ -7,6 +7,5 @@ try:
 except ImportError:
     __version__ = "unknown"
 
-from .main import app, handle_query
-
-__all__ = ["app", "handle_query"] 
+# Don't import app here since it requires environment variables
+__all__ = ["__version__"] 

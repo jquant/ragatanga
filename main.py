@@ -42,11 +42,12 @@ openai_client.api_key = api_key
 client = instructor.from_openai(openai_client)
 
 # Embedding + Model Config
-EMBED_MODEL      = "text-embedding-3-large"   # OpenAI embedding model
-GPT_MODEL        = "gpt-4o"                   # or "gpt-4" if you have access
-BATCH_SIZE       = 16                         # Batch size for embedding calls
-TOP_K            = 10                         # Retrieve top-K entries
-DIMENSIONS       = 3072                       # Dimensionality for embedding model
+EMBED_MODEL            = "text-embedding-3-large"   # OpenAI embedding model
+GPT_MODEL              = "gpt-4o"                   # or "gpt-4" if you have access
+GPT_MODEL_REASONING    = "o3-mini"                  # or "o3-mini" if you have access
+BATCH_SIZE             = 16                         # Batch size for embedding calls
+TOP_K                  = 10                         # Retrieve top-K entries
+DIMENSIONS             = 3072                       # Dimensionality for embedding model
 
 ###############################################################################
 # FASTAPI MODELS
@@ -520,7 +521,7 @@ async def generate_sparql_query(query: str) -> str:
             client.create,
             max_retries=3,
             response_model=Query,
-            model=GPT_MODEL,
+            model=GPT_MODEL_REASONING,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}

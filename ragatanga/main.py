@@ -15,7 +15,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from openai import OpenAI
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, computed_field
 from rdflib.plugins.sparql.parser import parseQuery
 from contextlib import asynccontextmanager
 from rdflib.plugins.sparql import prepareQuery
@@ -26,10 +26,10 @@ from owlready2 import sync_reasoner_pellet, get_ontology
 # CONFIGURATION
 ###############################################################################
 # File paths (can be updated as needed)
-OWL_FILE_PATH = "./ontology.ttl"
-KBASE_FILE = "./knowledge_base.md"
-KBASE_FAISS_INDEX_FILE = "./knowledge_base_faiss.index"
-KBASE_EMBEDDINGS_FILE = "./knowledge_base_embeddings.npy"
+OWL_FILE_PATH = "/root/data/ontology.ttl"
+KBASE_FILE = "/root/data/knowledge_base.md"
+KBASE_FAISS_INDEX_FILE = "/root/data/knowledge_base_faiss.index"
+KBASE_EMBEDDINGS_FILE = "/root/data/knowledge_base_embeddings.npy"
 
 # OpenAI client configuration
 openai_client = OpenAI()
@@ -55,8 +55,15 @@ class QueryRequest(BaseModel):
     query: str
 
 class QueryResponse(BaseModel):
-    retrieved_facts: List[str]
+    retrieved_facts_sparql: List[str]
+    retrieved_facts_semantic: List[str]
     answer: str
+
+    @computed_field
+    @property
+    def retrieved_facts(self) -> List[str]:
+        return self.retrieved_facts_sparql + self.retrieved_facts_semantic
+    
 
 class Query(BaseModel):
     """
@@ -585,7 +592,10 @@ def merge_results(sparql_results: List[str], semantic_results: List[str]) -> Lis
     """
     merged = {}
     
-    if sparql_results == ["No results found"]:
+    # Handle boolean SPARQL results explicitly
+    if len(sparql_results) == 1 and sparql_results[0] in ['True', 'False']:
+        merged[f"SPARQL query returned: {sparql_results[0]}"] = {"SPARQL"}
+    elif sparql_results == ["No results found"]:
         merged["No structured data found in the ontology"] = {"SPARQL"}
     else:
         for fact in sparql_results:
@@ -608,16 +618,30 @@ async def generate_answer(query: str, retrieved_texts: List[str]) -> QueryRespon
     """
     system_prompt = (
         "You are an intelligent assistant that uses ontology-derived facts to answer questions. "
+        "Your answer MUST include both SPARQL query results and semantic search results if available. "
+        "Your answer will go directly to the user, so it must be concise and to the point. "
+        "Remember SPARQL is precise and semantic search is not."
         "Use the provided facts to construct a structured, clear, and accurate answer in English. "
         "Organize your response using markdown formatting for clarity."
     )
 
-    context_block = "\n\n".join([f"FACT {i+1}: {txt}" for i, txt in enumerate(retrieved_texts)])
+    # Split facts by source
+    sparql_facts = [fact.replace("SPARQL: ", "") for fact in retrieved_texts if fact.startswith("SPARQL:")]
+    semantic_facts = [fact.replace("Semantic: ", "") for fact in retrieved_texts if fact.startswith("Semantic:")]
+    
+    context_block = (
+        "SPARQL Query Results:\n" + 
+        "\n".join([f"- {txt}" for txt in sparql_facts]) +
+        "\n\nSemantic Search Results:\n" +
+        "\n".join([f"- {txt}" for txt in semantic_facts])
+    )
+
     user_message = (
         f"User Query: {query}\n\n"
-        f"Ontology Facts:\n{context_block}\n\n"
-        "Based on the above facts, please provide a detailed and structured answer in English. "
-        "Use markdown formatting to organize your answer."
+        f"Retrieved Facts:\n{context_block}\n\n"
+        "Based on the above facts, please provide a detailed answer that explicitly addresses both "
+        "the SPARQL query results and semantic search findings. Use markdown formatting and ensure "
+        "both types of results are clearly presented in your response."
     )
 
     response = await asyncio.to_thread(
@@ -632,11 +656,25 @@ async def generate_answer(query: str, retrieved_texts: List[str]) -> QueryRespon
         temperature=0.2
     )
 
+    # Set all the response fields
+    response.retrieved_facts = retrieved_texts
+    response.retrieved_facts_sparql = sparql_facts
+    response.retrieved_facts_semantic = semantic_facts
+
     if not any(marker in response.answer for marker in ['##', '#', '*', '-']):
-        facts = response.retrieved_facts
         formatted_answer = "## Retrieved Information\n\n"
-        for fact in facts:
-            formatted_answer += f"* {fact}\n"
+        
+        if sparql_facts:
+            formatted_answer += "### SPARQL Results\n\n"
+            for fact in sparql_facts:
+                formatted_answer += f"* {fact}\n"
+            formatted_answer += "\n"
+            
+        if semantic_facts:
+            formatted_answer += "### Semantic Search Results\n\n"
+            for fact in semantic_facts:
+                formatted_answer += f"* {fact}\n"
+        
         response.answer = formatted_answer
 
     return response
