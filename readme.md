@@ -23,7 +23,7 @@ A sophisticated system that combines ontology-based reasoning with semantic sear
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ragatanga.git
+git clone https://github.com/jquant/ragatanga.git
 cd ragatanga
 ```
 
@@ -44,7 +44,6 @@ export OPENAI_API_KEY='your-api-key'
 - `setup_volume.py` - Volume setup for deployment
 - `ontology.ttl` - Main ontology file
 - `knowledge_base.md` - Knowledge base content
-- `dados_pratique_typesense/` - Data directory for Typesense integration
 
 ## API Endpoints
 
@@ -66,7 +65,7 @@ uvicorn main:app --reload
 ```bash
 curl -X POST "http://localhost:8000/query" \
      -H "Content-Type: application/json" \
-     -d '{"query": "Find all exercises targeting biceps"}'
+     -d '{"query": "What are the key concepts in the knowledge base?"}'
 ```
 
 ## Deployment
@@ -102,8 +101,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-[Add your license information here]
+MIT License
+
+Copyright (c) 2024 Ragatanga
+
+See the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
-[Add your contact information here]
+For questions and support, please open an issue on the GitHub repository.
