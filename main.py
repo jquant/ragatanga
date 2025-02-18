@@ -45,7 +45,7 @@ client = instructor.from_openai(openai_client)
 EMBED_MODEL      = "text-embedding-3-large"   # OpenAI embedding model
 GPT_MODEL        = "gpt-4o"                   # or "gpt-4" if you have access
 BATCH_SIZE       = 16                         # Batch size for embedding calls
-TOP_K            = 30                         # Retrieve top-K entries
+TOP_K            = 10                         # Retrieve top-K entries
 DIMENSIONS       = 3072                       # Dimensionality for embedding model
 
 ###############################################################################
@@ -126,8 +126,8 @@ def materialize_inferences(onto):
         with onto:
             sync_reasoner_pellet(infer_property_values=True)
         
-        # Save materialized version
-        materialized_file = OWL_FILE_PATH.replace(".ttl", "_materialized.ttl")
+        # Save materialized version with absolute path
+        materialized_file = os.path.abspath(OWL_FILE_PATH.replace(".ttl", "_materialized.ttl"))
         g.serialize(destination=materialized_file, format='turtle')
         
         # Clean up temp file
@@ -481,7 +481,56 @@ async def generate_sparql_query(query: str) -> str:
     ]
     filtered_schema = "\n".join(schema_lines)
     
-    default_query = """
+    system_prompt = (
+        "You are a SPARQL and ontology query expert. Here's the OWL schema (classes and properties only):\n"
+        f"{filtered_schema}\n\n"
+        "Based on this schema, create a SPARQL query that returns structured information "
+        "to answer the following question. Follow these guidelines:\n\n"
+        "1. Always include necessary PREFIX declarations\n"
+        "2. Use DISTINCT to avoid duplicate results\n"
+        "3. When querying instances:\n"
+        "   - Include rdfs:label for human-readable names\n"
+        "   - Include rdfs:comment for descriptions when available\n"
+        "   - Include relevant object properties linking to other instances\n"
+        "   - Include relevant datatype properties for literal values\n"
+        "4. Use OPTIONAL for potentially missing properties\n"
+        "5. Add appropriate filters (e.g., language, numeric comparisons) when needed\n"
+        "6. Order results by relevant criteria (e.g., numeric values, labels)\n"
+        "7. Use subqueries or aggregates if needed for complex relationships\n\n"
+        "Common prefixes:\n"
+        "PREFIX : <http://www.semanticweb.org/ontologies/>\n"
+        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+        "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+        "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
+    )
+    
+    user_message = (
+        f"Question: {query}\n\n"
+        "Generate a SPARQL query following the guidelines above. "
+        "Analyze the schema first to identify:\n"
+        "1. Relevant classes and their relationships\n"
+        "2. Properties that connect these classes\n"
+        "3. Properties that hold the requested information\n"
+        "Then construct a query that will return complete and accurate results."
+    )
+    
+    try:
+        response = await asyncio.to_thread(
+            client.create,
+            max_retries=3,
+            response_model=Query,
+            model=GPT_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0.0,
+        )
+        generated_query = response.valid_sparql_query
+    except Exception as e:
+        logger.warning(f"Failed to generate query: {e}. Using default query.")
+        generated_query = """
     PREFIX : <http://www.semanticweb.org/ontologies/pratique-fitness/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -500,55 +549,6 @@ async def generate_sparql_query(query: str) -> str:
     ORDER BY ?planPrice
     """
     
-    system_prompt = (
-        "Você é um especialista em SPARQL e consultas ontológicas. "
-        "Aqui está o esquema OWL da ontologia Pratique Fitness (apenas classes e propriedades):\n"
-        f"{filtered_schema}\n\n"
-        "Com base neste esquema, crie uma consulta SPARQL que retorne informações estruturadas "
-        "relevantes (incluindo rótulos, comentários e demais propriedades) "
-        "para responder à seguinte pergunta. "
-        "IMPORTANTE:\n"
-        "1. Sempre inclua as declarações de prefixo necessárias\n"
-        "2. Para unidades, sempre busque os planos associados (hasPlans)\n"
-        "3. Para planos, inclua nome (label), preço (hasPrice) e descrição (comment)\n"
-        "4. Use OPTIONAL para propriedades que podem estar ausentes\n"
-        "5. Ordene os resultados por preço do plano\n\n"
-        "PREFIX : <http://www.semanticweb.org/ontologies/pratique-fitness/>\n"
-        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-        "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
-        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-    )
-    
-    user_message = (
-        f"Pergunta: {query}\n\n"
-        "Responda com uma consulta SPARQL que inclua:\n"
-        "- Nome da unidade (label)\n"
-        "- Tipo da unidade com seu label\n"
-        "- Endereço\n"
-        "- Planos disponíveis com:\n"
-        "  * Nome do plano\n"
-        "  * Preço do plano\n"
-        "  * Descrição do plano (opcional)\n"
-        "Ordene por preço do plano."
-    )
-    
-    try:
-        response = await asyncio.to_thread(
-            client.create,
-            max_retries=3,
-            response_model=Query,
-            model=GPT_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.0,
-        )
-        generated_query = response.valid_sparql_query
-    except Exception as e:
-        logger.warning(f"Failed to generate query: {e}. Using default query.")
-        generated_query = default_query
-    
     print("Generated SPARQL Query:\n", generated_query)
     return generated_query
 
@@ -562,10 +562,15 @@ async def execute_sparql_query(sparql_query: str) -> List[str]:
     def run_query():
         g = rdflib.Graph()
         try:
-            # Use materialized ontology file instead of original
-            materialized_file = OWL_FILE_PATH.replace(".ttl", "_materialized.ttl")
+            # Use materialized ontology file with absolute path
+            materialized_file = os.path.abspath(OWL_FILE_PATH.replace(".ttl", "_materialized.ttl"))
+            if not os.path.exists(materialized_file):
+                logger.warning(f"Materialized file not found at {materialized_file}, falling back to original ontology")
+                materialized_file = OWL_FILE_PATH
+                
+            logger.info(f"Loading ontology from: {materialized_file}")
             g.parse(materialized_file, format='turtle')
-            logger.debug(f"Using materialized ontology for query: {sparql_query}")
+            logger.debug(f"Using ontology for query: {sparql_query}")
             
             # Execute the query
             results = g.query(prepared_query)
