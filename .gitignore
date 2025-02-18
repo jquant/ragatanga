@@ -41,3 +41,4 @@ dados_pratique_typesense/
 htmlcov/
 .pytest_cache/
 dados_pratique_typesense/schema/*.json
+ragatanga/data/knowledge_base.md
