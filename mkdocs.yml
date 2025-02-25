@@ -1,0 +1,98 @@
+site_name: Ragatanga
+site_description: A modern document retrieval system combining ontology-based and semantic search approaches
+site_url: https://example.com/ragatanga/  # Replace with actual URL when available
+site_author: Ragatanga Team
+copyright: Copyright &copy; 2023 Ragatanga Team
+repo_url: https://github.com/jquant/ragatanga
+repo_name: jquant/ragatanga
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - header.autohide
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.emoji
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+      lang:
+        - en
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ragatanga]
+          options:
+            show_source: true
+  - social
+  - tags
+  - minify:
+      minify_html: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - User Guide:
+    - Usage: usage.md
+    - Configuration: configuration.md
+    - Examples: examples.md
+  - Technical:
+    - Architecture: architecture.md
+    - Diagrams: diagrams.md
+  - API Reference: api-reference.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+  - Documentation: DOCUMENTATION_GUIDE.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jquant/ragatanga
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/ragatanga/
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+  version:
+    provider: mike
+    default: latest
+    
+extra_javascript:
+  - https://unpkg.com/mermaid@10.0.0/dist/mermaid.min.js 

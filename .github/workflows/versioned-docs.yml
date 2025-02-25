@@ -1,0 +1,70 @@
+name: Versioned Documentation
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., 0.3.1)'
+        required: true
+      alias:
+        description: 'Version alias (e.g., latest)'
+        required: false
+        default: ''
+      default:
+        description: 'Set as default version'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material mkdocstrings mkdocstrings-python mike
+      
+      - name: Configure Git user
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "GitHub Actions"
+      
+      - name: Get version from release
+        if: github.event_name == 'release'
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          echo "ALIAS=latest" >> $GITHUB_ENV
+          echo "SET_DEFAULT=true" >> $GITHUB_ENV
+      
+      - name: Get version from workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "ALIAS=${{ github.event.inputs.alias }}" >> $GITHUB_ENV
+          echo "SET_DEFAULT=${{ github.event.inputs.default }}" >> $GITHUB_ENV
+      
+      - name: Deploy docs with mike
+        run: |
+          ARGS="--push --rebase"
+          if [[ -n "$ALIAS" && "$ALIAS" != "" ]]; then
+            ARGS="$ARGS --alias-of $VERSION $ALIAS"
+          fi
+          if [[ "$SET_DEFAULT" == "true" ]]; then
+            ARGS="$ARGS --update-aliases"
+          fi
+          
+          mike deploy --message "Deploy docs for version $VERSION" $ARGS $VERSION 
