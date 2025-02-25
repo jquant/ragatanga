@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-0.3.1-blue.svg)](https://github.com/jquant/ragatanga/releases/tag/v0.3.1)
+[![Documentation](https://img.shields.io/badge/documentation-online-green.svg)](https://jquant.github.io/ragatanga/)
 
 Ragatanga is a hybrid retrieval system that combines ontology-based reasoning with semantic search for powerful knowledge retrieval.
 
@@ -30,6 +31,21 @@ git clone https://github.com/yourusername/ragatanga.git
 cd ragatanga
 pip install -e .
 ```
+
+## Documentation
+
+Comprehensive documentation is available at:
+
+[https://jquant.github.io/ragatanga/](https://jquant.github.io/ragatanga/)
+
+The documentation includes:
+- Getting Started Guide
+- Usage Examples
+- Configuration Options
+- Architecture Overview
+- API Reference
+- Diagrams
+- Changelog and more
 
 ## Quick Start
 
@@ -337,5 +353,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
- 
