@@ -1,6 +1,46 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools-scm>=6.2"]
+requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools_scm]
-write_to = "ragatanga/_version.py" 
+[project]
+name = "ragatanga"
+version = "0.3.0.dev1"
+authors = [
+    {name = "Dionisio Agourakis", email = "dionisio@getjai.com"},
+]
+description = "A hybrid semantic knowledge base and query system combining ontology-based reasoning with semantic search"
+readme = "readme.md"
+requires-python = ">=3.8"
+keywords = ["semantic", "knowledge-base", "ontology", "reasoning", "rag"]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "rdflib>=6.0.0",
+    "faiss-cpu>=1.7.4",
+    "openai>=1.0.0",
+    "sentence-transformers>=2.2.2",
+    "pydantic>=2.0.0",
+    "numpy>=1.22.0",
+    "fastapi>=0.100.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jquant/ragatanga"
+"Bug Tracker" = "https://github.com/jquant/ragatanga/issues"
+
+[tool.setuptools]
+packages = ["ragatanga", "ragatanga.core", "ragatanga.api", "ragatanga.utils", "ragatanga.data"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"ragatanga.data" = ["*.md", "*.ttl"] 

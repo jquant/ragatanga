@@ -2,13 +2,7 @@
 Ragatanga - A hybrid semantic knowledge base and query system.
 """
 
-try:
-    from ._version import version as __version__
-except ImportError:
-    __version__ = "unknown"
-
-# Don't import app here since it requires environment variables
-from ragatanga._version import version as __version__
+__version__ = "0.3.0.dev1"
 
 # Make core components available at package level
 from ragatanga.core.ontology import OntologyManager

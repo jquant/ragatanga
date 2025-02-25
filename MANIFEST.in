@@ -1,6 +1,7 @@
 include LICENSE
-include README.md
+include readme.md
 include requirements.txt
 recursive-include ragatanga/data *.ttl
 recursive-include ragatanga/data *.md
 recursive-include ragatanga *.py
+include pyproject.toml
