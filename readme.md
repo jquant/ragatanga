@@ -1,6 +1,7 @@
 # Ragatanga
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/jquant/ragatanga/releases/tag/v0.3.0)
 
 Ragatanga is a hybrid retrieval system that combines ontology-based reasoning with semantic search for powerful knowledge retrieval.
 
@@ -12,12 +13,17 @@ Ragatanga is a hybrid retrieval system that combines ontology-based reasoning wi
 - **💬 Multiple LLM Providers**: Support for OpenAI, HuggingFace, Ollama, and Anthropic LLMs
 - **🌐 Comprehensive API**: FastAPI endpoints for querying and managing knowledge
 - **📊 Confidence Scoring**: Ranks results with confidence scores for higher quality answers
+- **🌍 Multilingual Support**: Translates queries to match your ontology's language
+- **⚙️ Flexible Configuration**: Comprehensive configuration options through environment variables and config module
 
 ## Installation
 
 ```bash
-# Install from PyPI
+# Install the latest version from PyPI
 pip install ragatanga
+
+# Install a specific version
+pip install ragatanga==0.3.0
 
 # Install from source
 git clone https://github.com/yourusername/ragatanga.git
@@ -108,9 +114,14 @@ Ragatanga's modular architecture includes:
   - `routes.py`: API endpoint definitions
   - `models.py`: Pydantic models for request/response validation
 
-- **Utils**: Utility functions for embeddings and SPARQL
+- **Utils**: Utility functions for embeddings, SPARQL, and translation
   - `embeddings.py`: Embedding providers and utilities
   - `sparql.py`: SPARQL query generation and utilities
+  - `translation.py`: Multilingual support for query translation
+
+- **System**: Configuration and version management
+  - `config.py`: System-wide configuration settings
+  - `_version.py`: Version tracking and information
 
 ## Advanced Usage
 

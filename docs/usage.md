@@ -214,6 +214,57 @@ export LLM_PROVIDER="openai"  # openai, huggingface, ollama, anthropic
 # Model configuration
 export OPENAI_MODEL="gpt-4o"
 export OPENAI_EMBEDDING_MODEL="text-embedding-3-large"
+
+# Path configuration
+export ONTOLOGY_PATH="/path/to/your/ontology.ttl"
+export KNOWLEDGE_BASE_PATH="/path/to/your/knowledge_base.md"
+```
+
+### Configuration Module
+
+The `config.py` module provides centralized configuration for the entire system:
+
+```python
+from ragatanga.config import (
+    ONTOLOGY_PATH,
+    KNOWLEDGE_BASE_PATH,
+    TEMPERATURE,
+    MAX_TOKENS,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_PORT
+)
+
+# Use configuration values
+print(f"Using ontology at: {ONTOLOGY_PATH}")
+print(f"Using knowledge base at: {KNOWLEDGE_BASE_PATH}")
+print(f"Default LLM model: {DEFAULT_LLM_MODEL}")
+```
+
+### Version Information
+
+You can access the package version information programmatically:
+
+```python
+from ragatanga._version import __version__
+
+print(f"Ragatanga version: {__version__}")
+```
+
+### Multilingual Support
+
+Ragatanga includes translation capabilities for multilingual support:
+
+```python
+from ragatanga.utils.translation import translate_query_to_ontology_language
+
+# Translate a query to the ontology language (default is English)
+translated_query = translate_query_to_ontology_language(
+    "Quais unidades estão em Belo Horizonte?",  # Portuguese query
+    target_language="en"  # Translate to English
+)
+
+print(f"Translated query: {translated_query}")
+# Output: "Which units are in Belo Horizonte?"
 ```
 
 ### API Configuration

@@ -1,0 +1,5 @@
+build>=0.10.0
+twine>=4.0.2
+setuptools>=42
+wheel>=0.38.4
+setuptools-scm>=6.2 

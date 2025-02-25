@@ -18,23 +18,23 @@ Ragatanga is a hybrid retrieval system that combines ontology-based reasoning wi
 │                      Ragatanga System                       │
 └──────────────────────────────┬──────────────────────────────┘
                                │
-          ┌───────────────────┴────────────────────┐
-          │                                        │
-┌─────────▼─────────┐                   ┌──────────▼─────────┐
-│      Core         │                   │        API         │
-└─────────┬─────────┘                   └──────────┬─────────┘
-          │                                        │
-┌─────────▼─────────┐                   ┌──────────▼─────────┐
-│  ┌─────────────┐  │                   │  ┌─────────────┐   │
-│  │  Ontology   │◄─┼───────────────────┼──┤    App      │   │
-│  └─────┬───────┘  │                   │  └─────────────┘   │
-│        │          │                   │  ┌─────────────┐   │
-│  ┌─────▼───────┐  │                   │  │   Routes    │◄──┼────┐
-│  │  Semantic   │◄─┼───────────────────┼──┤             │   │    │
-│  └─────┬───────┘  │                   │  └─────────────┘   │    │
-│        │          │                   │  ┌─────────────┐   │    │
-│  ┌─────▼───────┐  │                   │  │   Models    │◄──┼────┘
-│  │  Retrieval  │◄─┼───────────────────┘  └─────────────┘   │
+          ┌───────────────────┼───────────────────┐
+          │                   │                   │
+┌─────────▼─────────┐ ┌───────▼──────┐   ┌────────▼────────┐
+│      Core         │ │    Config    │   │     Version     │
+└─────────┬─────────┘ └──────────────┘   └─────────────────┘
+          │                                        
+┌─────────▼─────────┐                   ┌────────────────────┐
+│  ┌─────────────┐  │                   │        API         │
+│  │  Ontology   │◄─┼───────────────────┤                    │
+│  └─────┬───────┘  │                   │  ┌─────────────┐   │
+│        │          │                   │  │    App      │   │
+│  ┌─────▼───────┐  │                   │  └─────────────┘   │
+│  │  Semantic   │◄─┼───────────────────┤  ┌─────────────┐   │
+│  └─────┬───────┘  │                   │  │   Routes    │◄──┼────┐
+│        │          │                   │  └─────────────┘   │    │
+│  ┌─────▼───────┐  │                   │  ┌─────────────┐   │    │
+│  │  Retrieval  │◄─┼───────────────────┤  │   Models    │◄──┼────┘
 │  └─────┬───────┘  │                   └────────────────────┘
 │        │          │
 │  ┌─────▼───────┐  │                   ┌────────────────────┐
@@ -43,9 +43,13 @@ Ragatanga is a hybrid retrieval system that combines ontology-based reasoning wi
 │        │          │                   │ │  Embeddings   │◄─┼──┐
 │  ┌─────▼───────┐  │                   │ └───────────────┘  │  │
 │  │    LLM      │◄─┼───────────────────┤ ┌───────────────┐  │  │
-│  └─────────────┘  │                   │ │    SPARQL     │◄─┼──┘
-└───────────────────┘                   │ └───────────────┘  │
-                                        └────────────────────┘
+│  └─────────────┘  │                   │ │    SPARQL     │◄─┼──┼─┐
+└───────────────────┘                   │ └───────────────┘  │  │ │
+                                        │ ┌───────────────┐  │  │ │
+                                        │ │  Translation  │◄─┼──┘ │
+                                        │ └───────────────┘  │    │
+                                        └────────────────────┘    │
+                                                                 
 ```
 
 ## Component Details
@@ -147,6 +151,37 @@ SPARQL generation and utility functions.
 - Generating SPARQL queries from natural language
 - SPARQL query validation
 - Text similarity calculations
+
+#### Translation Utilities (`utils/translation.py`)
+
+Provides language translation capabilities for multilingual support.
+
+**Key responsibilities:**
+- Translating user queries to the ontology's language
+- Supporting multiple translation providers (Google Translate, OpenAI)
+- Fallback mechanisms for reliable translation
+
+### System Components
+
+#### Configuration Management (`config.py`)
+
+Manages global configuration settings for the entire system.
+
+**Key responsibilities:**
+- Setting default paths for data files
+- Configuring semantic search parameters
+- Managing API settings
+- Defaulting to sample files if needed
+- Environment variable integration
+
+#### Version Management (`_version.py`)
+
+Handles version tracking for the package.
+
+**Key responsibilities:**
+- Defining the current version number
+- Providing version information for the package
+- Supporting setuptools-scm version tracking
 
 ## Data Flow
 

@@ -119,7 +119,7 @@ async def test_single_query():
         
         # Step 1: Generate SPARQL query
         start_time = time.time()
-        sparql_query = await generate_sparql_query(TEST_QUERY, filtered_schema=schema)
+        sparql_query = await generate_sparql_query(TEST_QUERY, ontology_schema=schema)
         query_result["sparql_query"] = sparql_query
         logger.info(f"Generated SPARQL query: {sparql_query}")
         
