@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     # Set up file paths
     app.state.data_dir = config.DATA_DIR
     app.state.ontology_path = config.ONTOLOGY_PATH
-    app.state.kb_file = os.path.join(config.DATA_DIR, "knowledge_base.md")
+    app.state.kb_file = config.KNOWLEDGE_BASE_PATH
     
     # Ensure data directory exists
     os.makedirs(config.DATA_DIR, exist_ok=True)
@@ -43,9 +43,24 @@ async def lifespan(app: FastAPI):
     # Check if knowledge base file exists
     if os.path.exists(app.state.kb_file):
         logger.info("Loading knowledge base...")
-        await app.state.semantic_search.load_knowledge_base(app.state.kb_file)
+        try:
+            # First try without force_rebuild
+            await app.state.semantic_search.load_knowledge_base(app.state.kb_file, force_rebuild=False)
+            
+            # Verify the index was properly loaded
+            if app.state.semantic_search.kbase_index is None:
+                logger.warning("Knowledge base index was not properly initialized. Rebuilding...")
+                await app.state.semantic_search.load_knowledge_base(app.state.kb_file, force_rebuild=True)
+        except Exception as e:
+            logger.error(f"Error loading knowledge base: {str(e)}. Trying to rebuild...")
+            # If there's an error, try force rebuilding the index
+            await app.state.semantic_search.load_knowledge_base(app.state.kb_file, force_rebuild=True)
     else:
         logger.warning(f"Knowledge base file {app.state.kb_file} not found. Starting with empty knowledge base.")
+    
+    # Set the global semantic search instance
+    import ragatanga.core.semantic as semantic_module
+    semantic_module._semantic_search = app.state.semantic_search
     
     # Initialize adaptive retriever
     logger.info("Initializing adaptive retriever")

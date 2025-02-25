@@ -5,15 +5,21 @@ Benchmarking tool for Ragatanga performance evaluation.
 This script measures and compares the performance of different configurations
 and components of the Ragatanga system.
 """
+# Import Ragatanga components
+from ragatanga.core.ontology import OntologyManager
+from ragatanga.core.query import generate_structured_answer
+from ragatanga.core.retrieval import AdaptiveRetriever
+from ragatanga.utils.embeddings import EmbeddingProvider
+from ragatanga.utils.sparql import generate_sparql_query
 
-import asyncio
-import time
-import json
-import os
 import argparse
+import asyncio
+import json
 import logging
-from typing import Dict, List, Any, Callable, Awaitable, Tuple
+import os
+import time
 from datetime import datetime
+from typing import Any, Awaitable, Callable, Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -22,13 +28,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ragatanga-benchmark")
 
-# Import Ragatanga components
-from ragatanga.core.ontology import OntologyManager
-from ragatanga.core.retrieval import AdaptiveRetriever
-from ragatanga.utils.sparql import generate_sparql_query
-from ragatanga.core.query import analyze_query_type, generate_structured_answer
-from ragatanga.core.semantic import retrieve_top_k_with_scores
-from ragatanga.utils.embeddings import EmbeddingProvider
+
 
 # Test queries for benchmarking
 TEST_QUERIES = [
@@ -183,7 +183,7 @@ async def run_benchmark(
                     iteration_result["output_size"] = len(output)
                 
                 # Add custom metrics based on output type
-                if hasattr(output, "answer"):
+                if hasattr(output, "answer") and not isinstance(output, list):
                     iteration_result["answer_length"] = len(output.answer)
                 
                 result.add_iteration(**iteration_result)

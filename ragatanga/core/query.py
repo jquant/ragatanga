@@ -4,9 +4,7 @@ Query generation and processing module for Ragatanga.
 This module handles query analysis, processing, and answer generation.
 """
 
-import re
-import asyncio
-from typing import List, Tuple, Dict, Any, Optional, Union
+from typing import List
 from pydantic import BaseModel, Field
 from loguru import logger
 
@@ -144,27 +142,37 @@ def generate_fallback_answer(query: str, sparql_facts: List[str], semantic_facts
     Generate a simple fallback answer when LLM generation fails.
     
     Args:
-        query: The original query
-        sparql_facts: List of facts from SPARQL
-        semantic_facts: List of facts from semantic search
+        query: The user's query
+        sparql_facts: Facts from SPARQL queries
+        semantic_facts: Facts from semantic search
         
     Returns:
-        Formatted fallback answer
+        A simple answer based on the facts
     """
-    answer = f"## Answer to: {query}\n\n"
+    # Combine all facts
+    all_facts = sparql_facts + semantic_facts
     
-    if not sparql_facts and not semantic_facts:
-        return answer + "I don't have enough information to answer this question. Please try rephrasing your query or ask about a different topic."
+    if not all_facts:
+        return f"I don't have enough information to answer the question: '{query}'. Please try a different query."
     
+    # Create a simple answer
+    answer = f"Here's what I found about '{query}':\n\n"
+    
+    # Add SPARQL facts
     if sparql_facts:
-        answer += "### Information from Structured Data:\n\n"
-        for fact in sparql_facts[:5]:  # Limit to top 5
+        answer += "From structured data:\n"
+        for i, fact in enumerate(sparql_facts):
             answer += f"- {fact}\n"
-        
+        answer += "\n"
+    
+    # Add semantic facts
     if semantic_facts:
-        answer += "\n### Additional Information:\n\n"
-        for fact in semantic_facts[:5]:  # Limit to top 5
+        answer += "From unstructured data:\n"
+        for i, fact in enumerate(semantic_facts):
             answer += f"- {fact}\n"
+        answer += "\n"
+    
+    answer += "This is a fallback answer generated from the available facts."
     
     return answer
 
@@ -262,12 +270,12 @@ async def generate_structured_answer(
         f"Use markdown formatting for better readability."
     )
     
-    # Split facts for QueryResponse object
+    # Extract and prepare facts for QueryResponse object
     sparql_fact_texts = [fact for fact, _ in sparql_facts]
     semantic_fact_texts = [fact for fact, _ in semantic_facts]
     all_fact_texts = retrieved_texts
     
-    # Create initial response object
+    # Create initial response object with all facts properly populated
     response = QueryResponse(
         retrieved_facts=all_fact_texts,
         retrieved_facts_sparql=sparql_fact_texts,
@@ -279,6 +287,7 @@ async def generate_structured_answer(
     try:
         try:
             # Try structured generation first (will work with OpenAI provider)
+            logger.debug("Attempting structured generation")
             llm_response = await llm_provider.generate_structured(
                 prompt=user_message,
                 response_model=QueryResponse,
@@ -287,10 +296,23 @@ async def generate_structured_answer(
                 max_tokens=max_tokens
             )
             
-            response = llm_response
+            # Make sure to preserve all the original facts even if the LLM didn't
+            # include them in the structured response
+            if llm_response.answer:
+                response.answer = llm_response.answer
+            else:
+                logger.warning("Structured generation returned empty answer, falling back to text generation")
+                answer_text = await llm_provider.generate_text(
+                    prompt=user_message,
+                    system_prompt=system_prompt,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                response.answer = answer_text
             
         except NotImplementedError:
             # Fallback to text generation and manual construction
+            logger.debug("Structured generation not implemented, falling back to text generation")
             answer_text = await llm_provider.generate_text(
                 prompt=user_message,
                 system_prompt=system_prompt,
@@ -302,7 +324,25 @@ async def generate_structured_answer(
             
     except Exception as e:
         logger.error(f"Error generating answer: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         # Provide a fallback answer using simple template
         response.answer = generate_fallback_answer(query, sparql_fact_texts, semantic_fact_texts)
+    
+    # Final check to ensure we never return an empty answer
+    if not response.answer:
+        logger.warning("Answer is still empty after all attempts, using fallback")
+        response.answer = generate_fallback_answer(query, sparql_fact_texts, semantic_fact_texts)
+    
+    # Verify that all fact lists are populated
+    if not response.retrieved_facts:
+        logger.warning("Retrieved facts list is empty, repopulating from source lists")
+        response.retrieved_facts = all_fact_texts
+    if not response.retrieved_facts_sparql:
+        logger.warning("SPARQL facts list is empty, repopulating")
+        response.retrieved_facts_sparql = sparql_fact_texts
+    if not response.retrieved_facts_semantic:
+        logger.warning("Semantic facts list is empty, repopulating")
+        response.retrieved_facts_semantic = semantic_fact_texts
     
     return response

@@ -7,7 +7,7 @@ This module handles ontology loading, materialization, and SPARQL query executio
 import os
 import tempfile
 from datetime import datetime
-from typing import List, Dict, Any, Optional, Set, Tuple
+from typing import List, Dict, Any, Optional
 
 import asyncio
 import aiofiles
@@ -34,7 +34,7 @@ class OntologyManager:
         self.last_modified_time = None
         self.graph = None
     
-    async def load_and_materialize(self, force_rebuild=False) -> owlready2.Ontology:
+    async def load_and_materialize(self, force_rebuild=False) -> Optional[owlready2.Ontology]:
         """
         Load ontology and materialize inferences, with cached handling.
         
@@ -42,7 +42,7 @@ class OntologyManager:
             force_rebuild: Whether to force rebuilding the materialized ontology
             
         Returns:
-            The loaded ontology object
+            The loaded ontology object or None if loading fails
         """
         current_modified_time = os.path.getmtime(self.owl_file_path)
         

@@ -3,26 +3,18 @@ import json
 import time
 import os
 import sys
+import numpy as np
 
 # Add parent directory to path so we can import our modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import required modules
-from ragatanga.main import (
-    generate_sparql_query, 
-    OntologyManager, 
-    AdaptiveRetriever,
-    generate_structured_answer,
-    execute_sparql_query,
-    embed_texts_in_batches,
-    build_faiss_index,
-    load_faiss_index,
-    save_faiss_index,
-    BATCH_SIZE,
-    KBASE_FILE,
-    KBASE_FAISS_INDEX_FILE,
-    KBASE_EMBEDDINGS_FILE
-)
+from ragatanga.utils.sparql import generate_sparql_query
+from ragatanga.core.ontology import OntologyManager, extract_relevant_schema
+from ragatanga.core.retrieval import AdaptiveRetriever
+from ragatanga.core.query import generate_structured_answer, analyze_query_type
+from ragatanga.utils.embeddings import build_faiss_index, load_faiss_index, save_faiss_index
+from ragatanga.config import BATCH_SIZE, DATA_DIR, KNOWLEDGE_BASE_PATH
 
 # Configure logging
 import logging
@@ -36,13 +28,42 @@ logger.info(f"Using ontology file at: {ONTOLOGY_PATH}")
 # Single test query
 TEST_QUERY = "Which units are in Belo Horizonte?"
 
+# Define constants for testing
+KBASE_FILE = KNOWLEDGE_BASE_PATH
+KBASE_FAISS_INDEX_FILE = os.path.join(DATA_DIR, "sample_knowledge_base_index.pkl")
+KBASE_EMBEDDINGS_FILE = os.path.join(DATA_DIR, "sample_knowledge_base_embeddings.npy")
+
+# Create placeholders for global variables
+kbase_entries = []
+kbase_index = None
+kbase_embeddings_np = None
+
+# Define the embed_texts_in_batches function for testing
+async def embed_texts_in_batches(texts, batch_size=BATCH_SIZE):
+    """
+    Simplified version for testing - just create random embeddings.
+    """
+    from ragatanga.utils.embeddings import EmbeddingProvider
+    
+    embed_provider = EmbeddingProvider.get_provider()
+    return await embed_provider.embed_texts(texts)
+
+# Create a simplified execute_sparql_query function for testing
+async def execute_sparql_query(query, endpoint=None):
+    """
+    Simplified version for testing.
+    """
+    # Use the ontology manager to execute the query
+    ontology_manager = OntologyManager(ONTOLOGY_PATH)
+    await ontology_manager.load_and_materialize()
+    return await ontology_manager.execute_sparql(query)
+
 async def initialize_knowledge_base():
     """Initialize the knowledge base index."""
     logger.info("Initializing knowledge base...")
     
-    # Import necessary globals
-    from ragatanga.main import kbase_entries, kbase_index, kbase_embeddings_np
-    import numpy as np
+    # Access our global variables
+    global kbase_entries, kbase_index, kbase_embeddings_np
     
     # Check if knowledge base file exists
     if not os.path.exists(KBASE_FILE):
@@ -54,36 +75,25 @@ async def initialize_knowledge_base():
         kbase_content = file.read()
     
     # Update global kbase_entries
-    global_kbase_entries = [chunk.strip() for chunk in kbase_content.split("\n\n") if chunk.strip()]
-    
-    # Set the global variable in the main module
-    import ragatanga.main
-    ragatanga.main.kbase_entries = global_kbase_entries
+    kbase_entries = [chunk.strip() for chunk in kbase_content.split("\n\n") if chunk.strip()]
     
     # Build or load FAISS index
     if os.path.exists(KBASE_FAISS_INDEX_FILE) and os.path.exists(KBASE_EMBEDDINGS_FILE):
         logger.info("Loading existing FAISS index...")
-        index, embeddings = load_faiss_index(KBASE_FAISS_INDEX_FILE, KBASE_EMBEDDINGS_FILE)
-        
-        # Set the global variables in the main module
-        ragatanga.main.kbase_index = index
-        ragatanga.main.kbase_embeddings_np = embeddings
+        kbase_index, kbase_embeddings_np = load_faiss_index(KBASE_FAISS_INDEX_FILE, KBASE_EMBEDDINGS_FILE)
     else:
         logger.info("Building new FAISS index...")
-        embeddings = await embed_texts_in_batches(global_kbase_entries, BATCH_SIZE)
-        index, embeddings = build_faiss_index(np.asarray(embeddings))
-        save_faiss_index(index, KBASE_FAISS_INDEX_FILE, embeddings, KBASE_EMBEDDINGS_FILE)
-        
-        # Set the global variables in the main module
-        ragatanga.main.kbase_index = index
-        ragatanga.main.kbase_embeddings_np = embeddings
+        kbase_embeddings_np = await embed_texts_in_batches(kbase_entries)
+        dimension = 1536  # Default dimension for OpenAI embeddings
+        kbase_index, kbase_embeddings_np = build_faiss_index(kbase_embeddings_np, dimension)
+        save_faiss_index(kbase_index, KBASE_FAISS_INDEX_FILE, kbase_embeddings_np, KBASE_EMBEDDINGS_FILE)
     
     logger.info("Knowledge base initialization complete!")
     return True
 
 async def test_single_query():
-    """Test with a single query."""
-    logger.info(f"Testing single query: {TEST_QUERY}")
+    """Test a single query end-to-end."""
+    logger.info("Testing a single query...")
     
     # Initialize knowledge base first
     kb_initialized = await initialize_knowledge_base()
@@ -104,9 +114,12 @@ async def test_single_query():
     }
     
     try:
+        # Extract relevant schema for SPARQL query generation
+        schema = await extract_relevant_schema(query=TEST_QUERY, owl_path=ONTOLOGY_PATH)
+        
         # Step 1: Generate SPARQL query
         start_time = time.time()
-        sparql_query = await generate_sparql_query(TEST_QUERY)
+        sparql_query = await generate_sparql_query(TEST_QUERY, filtered_schema=schema)
         query_result["sparql_query"] = sparql_query
         logger.info(f"Generated SPARQL query: {sparql_query}")
         

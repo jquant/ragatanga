@@ -4,14 +4,13 @@ Main entry point for the Ragatanga API.
 This module provides a simple way to start the Ragatanga API server.
 """
 
-import os
 import uvicorn
 from loguru import logger
 
 from ragatanga import config
 from ragatanga.api.app import app
 
-def run_server(host: str = "0.0.0.0", port: int = None):
+def run_server(host: str = "0.0.0.0", port: int = config.DEFAULT_PORT):
     """
     Run the Ragatanga API server.
     

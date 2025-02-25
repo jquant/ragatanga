@@ -6,7 +6,7 @@ and semantic search-based retrieval with adaptive parameter tuning.
 """
 
 import re
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple
 from loguru import logger
 
 from ragatanga.core.ontology import OntologyManager, extract_relevant_schema

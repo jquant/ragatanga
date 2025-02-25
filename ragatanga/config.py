@@ -1,14 +1,28 @@
 import os
 from pathlib import Path
-from ragatanga._version import version as VERSION
+from ragatanga._version import __version__ as VERSION
 
 # Get the base directory of the project
 BASE_DIR = Path(__file__).resolve().parent
 
 # Paths for data files
 DATA_DIR = os.path.join(BASE_DIR, "data")
-ONTOLOGY_PATH = os.path.join(DATA_DIR, "ontology.ttl")
-KNOWLEDGE_BASE_PATH = os.path.join(DATA_DIR, "knowledge_base.txt")
+
+# Default to sample files if the real files don't exist
+ONTOLOGY_PATH = os.getenv("ONTOLOGY_PATH") or os.path.join(DATA_DIR, "sample_ontology.ttl")
+KNOWLEDGE_BASE_PATH = os.getenv("KNOWLEDGE_BASE_PATH") or os.path.join(DATA_DIR, "sample_knowledge_base.md")
+
+# If the sample files exist but the real files don't, use the sample files
+if not os.path.exists(ONTOLOGY_PATH) or os.path.getsize(ONTOLOGY_PATH) == 0:
+    sample_path = os.path.join(DATA_DIR, "sample_ontology.ttl")
+    if os.path.exists(sample_path) and os.path.getsize(sample_path) > 0:
+        ONTOLOGY_PATH = sample_path
+
+if not os.path.exists(KNOWLEDGE_BASE_PATH) or os.path.getsize(KNOWLEDGE_BASE_PATH) == 0:
+    sample_path = os.path.join(DATA_DIR, "sample_knowledge_base.md")
+    if os.path.exists(sample_path) and os.path.getsize(sample_path) > 0:
+        KNOWLEDGE_BASE_PATH = sample_path
+
 KBASE_INDEX_PATH = os.path.join(DATA_DIR, "kbase_index.pkl")
 
 # SPARQL configuration

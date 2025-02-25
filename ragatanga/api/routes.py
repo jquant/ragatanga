@@ -3,9 +3,7 @@ FastAPI routes for the Ragatanga API.
 """
 
 import os
-import asyncio
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+import traceback
 
 from fastapi import APIRouter, HTTPException, UploadFile, Depends
 from fastapi.responses import FileResponse
@@ -57,11 +55,17 @@ async def handle_query(
     logger.info(f"Processing query: {user_query}")
     
     try:
+        # Debug the environment
+        logger.debug(f"OpenAI API Key exists: {bool(os.environ.get('OPENAI_API_KEY'))}")
+        logger.debug(f"OWL_FILE_PATH value: {os.environ.get('OWL_FILE_PATH')}")
+        
         # Use adaptive retrieval
+        logger.debug("Starting adaptive retrieval")
         retrieved_texts, confidence_scores = await retriever.retrieve(user_query)
         logger.debug(f"Retrieved {len(retrieved_texts)} results with adaptive parameters")
         
         # Generate structured answer
+        logger.debug("Starting answer generation")
         answer = await generate_structured_answer(user_query, retrieved_texts, confidence_scores)
         
         # Log success
@@ -69,15 +73,16 @@ async def handle_query(
         
         return answer
     except Exception as e:
-        # Log the error
-        logger.error(f"Error processing query: {str(e)}", exc_info=True)
+        # Capture and log the full exception
+        error_detail = traceback.format_exc()
+        logger.error(f"Error processing query: {str(e)}\n{error_detail}")
         
-        # Return a graceful error response
+        # Return a graceful error response with more details
         return QueryResponse(
             retrieved_facts=[],
             retrieved_facts_sparql=[],
             retrieved_facts_semantic=[],
-            answer=f"I encountered an error while processing your query. Please try again or rephrase your question. Error details: {str(e)}"
+            answer=f"Error processing query. Details: {str(e)}. Type: {type(e).__name__}"
         )
 
 @router.post("/upload/ontology", response_model=StatusResponse)

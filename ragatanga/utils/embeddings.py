@@ -4,7 +4,7 @@ Embedding providers module that abstracts different embedding backends.
 
 import os
 import abc
-from typing import List, Union, Dict, Any, Optional
+from typing import List, Optional
 import numpy as np
 import asyncio
 from loguru import logger
@@ -40,7 +40,7 @@ class EmbeddingProvider(abc.ABC):
         pass
     
     @staticmethod
-    def get_provider(provider_name: str = None, **kwargs) -> "EmbeddingProvider":
+    def get_provider(provider_name: Optional[str] = None, **kwargs) -> "EmbeddingProvider":
         """
         Factory method to get an embedding provider based on configuration.
         
@@ -67,7 +67,7 @@ class EmbeddingProvider(abc.ABC):
 class OpenAIEmbeddingProvider(EmbeddingProvider):
     """OpenAI-based embedding provider."""
     
-    def __init__(self, model: str = "text-embedding-3-large", api_key: str = None, **kwargs):
+    def __init__(self, model: str = "text-embedding-3-large", api_key: Optional[str] = None, **kwargs):
         """
         Initialize the OpenAI embedding provider.
         
@@ -77,7 +77,6 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
             **kwargs: Additional parameters for the OpenAI client
         """
         try:
-            import openai
             from openai import OpenAI
         except ImportError:
             raise ImportError("OpenAI package is required. Install it with 'pip install openai'")
@@ -129,27 +128,30 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
 class HuggingFaceEmbeddingProvider(EmbeddingProvider):
     """HuggingFace-based embedding provider."""
     
-    def __init__(self, model: str = "sentence-transformers/all-mpnet-base-v2", **kwargs):
+    def __init__(self, model_name: str = "sentence-transformers/all-mpnet-base-v2", **kwargs):
         """
         Initialize the HuggingFace embedding provider.
         
         Args:
-            model: The HuggingFace model to use
+            model_name: The HuggingFace model to use
             **kwargs: Additional parameters for the model
         """
-        # Lazy import to avoid dependency if not used
         try:
-            from transformers import AutoTokenizer, AutoModel
-            self.tokenizer = AutoTokenizer.from_pretrained(model)
-            self.model = AutoModel.from_pretrained(model)
-            self.device = kwargs.get("device", "cuda" if self._is_cuda_available() else "cpu")
-            self.model.to(self.device)
-            self.dimension = self.model.config.hidden_size
+            from transformers import AutoModel, AutoTokenizer
+            import torch
         except ImportError:
             raise ImportError(
-                "HuggingFace transformers is required for HuggingFaceEmbeddingProvider. "
+                "Transformers and torch packages are required. " +
                 "Install it with 'pip install transformers torch'"
             )
+        
+        self.model_name = model_name
+        self.device = "cuda" if self._is_cuda_available() else "cpu"
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        
+        # Add dimension attribute based on model's config
+        self.dimension = self.model.config.hidden_size
     
     def _is_cuda_available(self) -> bool:
         """Check if CUDA is available."""
@@ -237,7 +239,8 @@ class SentenceTransformersEmbeddingProvider(EmbeddingProvider):
         """Embed a single query string using SentenceTransformers."""
         def _embed():
             embedding = self.model.encode(query, normalize_embeddings=True)
-            return embedding
+            # Convert to numpy array if it's not already
+            return np.array(embedding) if not isinstance(embedding, np.ndarray) else embedding
         
         return await asyncio.to_thread(_embed)
     
@@ -269,7 +272,7 @@ def build_faiss_index(embeddings: np.ndarray, dimension: int) -> tuple:
     embeddings_norm = embeddings / (norms + 1e-10)
 
     index = faiss.IndexFlatIP(dimension)
-    index.add(embeddings_norm)
+    index.add(embeddings_norm)  # type: ignore
     return index, embeddings_norm
 
 def save_faiss_index(index, index_file: str, embeddings: np.ndarray, embed_file: str):

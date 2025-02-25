@@ -4,14 +4,19 @@ SPARQL utilities module for Ragatanga.
 This module provides utilities for generating and executing SPARQL queries.
 """
 
-import asyncio
 import re
-from typing import List, Dict, Any, Optional, Type, TypeVar, Generic
+from typing import TypeVar, Optional
 from pydantic import BaseModel, Field, field_validator
 from rdflib.plugins.sparql.parser import parseQuery
 from loguru import logger
+import os
+# Option 1: Using a third-party translation service
+from googletrans import Translator  # pip install googletrans-py
 
-from ragatanga.utils.embeddings import EmbeddingProvider
+# Option 2: Using OpenAI for translation (since you already have it configured)
+import openai
+
+from ragatanga.utils.translation import translate_query_to_ontology_language
 
 T = TypeVar('T')
 
@@ -54,21 +59,29 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             raise ValueError(f"Invalid SPARQL query: {e}")
         return value
 
-async def generate_sparql_query(query: str, filtered_schema: str, llm_provider=None) -> str:
+async def generate_sparql_query(query: str, ontology_schema: str) -> str:
     """
     Generate a SPARQL query from a natural language query with improved prompting.
     
     Args:
         query: The natural language query
-        filtered_schema: Filtered ontology schema relevant to the query
-        llm_provider: LLM provider to use (if None, uses default)
+        ontology_schema: The ontology schema
         
     Returns:
         Generated SPARQL query
     """
+    # Translate query to ontology language (English)
+    translated_query = translate_query_to_ontology_language(query)
+    
+    # Log the translation for debugging
+    if translated_query != query:
+        logger.info(f"Translated query from '{query}' to '{translated_query}'")
+    
     # Import here to avoid circular imports
     from ragatanga.core.llm import LLMProvider
     
+    # Initialize llm_provider
+    llm_provider = None  # Define it first
     if llm_provider is None:
         llm_provider = LLMProvider.get_provider()
     
@@ -124,13 +137,13 @@ ORDER BY ?price
 
 Now, generate a valid SPARQL query for the following user question:"""
 
-    user_message = f"User question: {query}\n\nPlease generate a SPARQL query to answer this question based on the provided ontology schema."
+    user_message = f"User question: {translated_query}\n\nPlease generate a SPARQL query to answer this question based on the provided ontology schema."
     
     try:
         response = await llm_provider.generate_structured(
             prompt=user_message,
             response_model=Query,
-            system_prompt=system_prompt.format(schema=filtered_schema)
+            system_prompt=system_prompt.format(schema=ontology_schema)
         )
         generated_query = response.valid_sparql_query
         
@@ -139,11 +152,11 @@ Now, generate a valid SPARQL query for the following user question:"""
             parseQuery(generated_query)
         except Exception as e:
             logger.warning(f"Generated query validation failed: {e}. Falling back.")
-            return await generate_fallback_query(query, filtered_schema)
+            return await generate_fallback_query(translated_query, ontology_schema)
             
     except Exception as e:
         logger.warning(f"Failed to generate query: {e}. Using fallback strategy.")
-        generated_query = await generate_fallback_query(query, filtered_schema)
+        generated_query = await generate_fallback_query(translated_query, ontology_schema)
     
     logger.debug(f"Generated SPARQL Query:\n{generated_query}")
     return generated_query
