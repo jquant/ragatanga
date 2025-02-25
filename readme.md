@@ -1,7 +1,7 @@
 # Ragatanga
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/jquant/ragatanga/releases/tag/v0.3.0)
+[![Version](https://img.shields.io/badge/version-0.3.1-blue.svg)](https://github.com/jquant/ragatanga/releases/tag/v0.3.1)
 
 Ragatanga is a hybrid retrieval system that combines ontology-based reasoning with semantic search for powerful knowledge retrieval.
 
