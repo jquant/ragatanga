@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ragatanga"
-version = "0.3.0.dev1"
+version = "0.3.0"
 authors = [
     {name = "Dionisio Agourakis", email = "dionisio@getjai.com"},
 ]

@@ -7,7 +7,7 @@ from setuptools import setup, find_namespace_packages
 
 if __name__ == "__main__":
     setup(
-        version="0.3.0.dev1",
+        version="0.3.0",
         packages=find_namespace_packages(include=["ragatanga", "ragatanga.*"]),
         # The rest of the configuration is in pyproject.toml
     ) 
