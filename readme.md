@@ -38,17 +38,19 @@ import asyncio
 from ragatanga.core.ontology import OntologyManager
 from ragatanga.core.retrieval import AdaptiveRetriever
 from ragatanga.core.query import generate_structured_answer
+from ragatanga.config import ONTOLOGY_PATH, KNOWLEDGE_BASE_PATH
 
 async def main():
-    # Initialize ontology manager
-    ontology_manager = OntologyManager("path/to/ontology.ttl")
+    # Initialize ontology manager with the sample ontology
+    # The package includes a sample ontology file that's loaded by default
+    ontology_manager = OntologyManager(ONTOLOGY_PATH)
     await ontology_manager.load_and_materialize()
     
     # Initialize adaptive retriever
     retriever = AdaptiveRetriever(ontology_manager)
     
     # Retrieve information for a query
-    query = "What units are in Belo Horizonte?"
+    query = "What classes are defined in the sample ontology?"
     retrieved_texts, confidence_scores = await retriever.retrieve(query)
     
     # Generate an answer
@@ -56,6 +58,19 @@ async def main():
     
     # Print the answer
     print(answer.answer)
+    
+    # You can try additional queries related to the sample data
+    sample_queries = [
+        "What properties does Class1 have?",
+        "How many individuals are in the ontology?",
+        "Describe the relationship between Class1 and Class2"
+    ]
+    
+    for sample_query in sample_queries:
+        print(f"\nQuery: {sample_query}")
+        texts, scores = await retriever.retrieve(sample_query)
+        result = await generate_structured_answer(sample_query, texts, scores)
+        print(f"Answer: {result.answer}")
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -63,18 +78,27 @@ if __name__ == "__main__":
 
 ## API Usage
 
-Start the API server:
+Start the API server (which will use the sample data files by default):
 
 ```bash
 python -m ragatanga.main
 ```
 
-Then, query the API:
+Then, query the API with questions about the sample data:
 
 ```bash
+# Query about the sample ontology classes
 curl -X POST "http://localhost:8000/query" \
      -H "Content-Type: application/json" \
-     -d '{"query": "What units are in Belo Horizonte?"}'
+     -d '{"query": "What classes are defined in the sample ontology?"}'
+
+# Query about sample ontology properties
+curl -X POST "http://localhost:8000/query" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "What properties does Class1 have?"}'
+
+# Get statistics about the sample ontology
+curl -X GET "http://localhost:8000/describe_ontology"
 ```
 
 ### API Endpoints
@@ -97,6 +121,34 @@ Ragatanga can be configured through environment variables:
 - `HF_API_KEY`: Your HuggingFace API key (required for HuggingFace API)
 - `EMBEDDING_PROVIDER`: Embedding provider to use (openai, huggingface, sentence-transformers)
 - `LLM_PROVIDER`: LLM provider to use (openai, huggingface, ollama, anthropic)
+- `ONTOLOGY_PATH`: Path to your custom ontology file
+- `KNOWLEDGE_BASE_PATH`: Path to your custom knowledge base file
+
+## Sample Data
+
+Ragatanga comes with sample data to help you get started immediately:
+
+### Sample Ontology (`sample_ontology.ttl`)
+
+A minimal ontology demonstrating the basic structure with:
+- Classes representing key concepts
+- Properties defining relationships between classes
+- Individuals (instances) of the classes
+- Labels and descriptions for improved readability
+
+This sample ontology uses standard OWL/RDF patterns and can be used as a template for building your own domain-specific ontologies.
+
+### Sample Knowledge Base (`sample_knowledge_base.md`)
+
+A markdown file with text descriptions that complement the ontology:
+- Detailed explanations of concepts
+- Usage examples
+- FAQs about the domain
+- Additional unstructured information
+
+This sample knowledge base demonstrates how to structure markdown for optimal chunking and retrieval.
+
+You can replace these sample files with your own data by setting the `ONTOLOGY_PATH` and `KNOWLEDGE_BASE_PATH` environment variables.
 
 ## Architecture
 
@@ -129,75 +181,119 @@ Ragatanga's modular architecture includes:
 
 ```python
 from ragatanga.utils.embeddings import EmbeddingProvider
+from ragatanga.config import KNOWLEDGE_BASE_PATH
 
 # Get a specific provider
 embed_provider = EmbeddingProvider.get_provider("sentence-transformers")
 
-# Embed a query
-query_embedding = await embed_provider.embed_query("What units are in Belo Horizonte?")
+# Embed a query about the sample data
+query_embedding = await embed_provider.embed_query("What classes are defined in the sample ontology?")
+
+# You can also embed the entire knowledge base
+with open(KNOWLEDGE_BASE_PATH, "r") as f:
+    kb_text = f.read()
+    kb_embedding = await embed_provider.embed_query(kb_text)
 ```
 
 Available embedding providers:
-- `openai`: OpenAI's text-embedding models
-- `huggingface`: HuggingFace's embedding models
-- `sentence-transformers`: SentenceTransformers embedding models
-
+- `openai`: OpenAI's text-embedding models (requires `OPENAI_API_KEY`)
+- `huggingface`: HuggingFace's embedding models (requires `HF_API_KEY`)
+- `sentence-transformers`: SentenceTransformers embedding models (requires `SENTENCE_TRANSFORMERS_API_KEY`)
+- `anthropic`: Anthropic's embedding models (requires `ANTHROPIC_API_KEY`)
 ### Using Different LLM Providers
 
 ```python
 from ragatanga.core.llm import LLMProvider
+from ragatanga.config import ONTOLOGY_PATH
+import rdflib
 
 # Get a specific provider
 llm_provider = LLMProvider.get_provider("huggingface", model="mistralai/Mistral-7B-Instruct-v0.2")
 
-# Generate text
+# Load the sample ontology
+g = rdflib.Graph()
+g.parse(ONTOLOGY_PATH, format="turtle")
+
+# Get all classes from the sample ontology
+query = """
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?class ?label
+WHERE {
+  ?class a owl:Class .
+  OPTIONAL { ?class rdfs:label ?label }
+}
+"""
+results = g.query(query)
+
+# Generate a summary of the classes in the sample ontology
+classes_text = "\n".join([f"Class: {str(row.class)}, Label: {str(row.label)}" for row in results])
+system_prompt = "You are an ontology expert helping to document an OWL ontology."
+prompt = f"Here are the classes in our sample ontology:\n{classes_text}\n\nPlease generate a brief summary of these classes."
+
 response = await llm_provider.generate_text(
-    prompt="What are the benefits of regular exercise?",
-    system_prompt="You are a fitness expert."
+    prompt=prompt,
+    system_prompt=system_prompt
 )
 ```
-
-Available LLM providers:
-- `openai`: OpenAI's GPT models
-- `huggingface`: HuggingFace's language models (API or local)
-- `ollama`: Local models via Ollama
-- `anthropic`: Anthropic's Claude models
 
 ### Customizing Ontology Management
 
 ```python
-from ragatanga.core.ontology import OntologyManager
+from ragatanga.core.ontology import OntologyManager, extract_relevant_schema
+from ragatanga.config import ONTOLOGY_PATH
 
-# Initialize with an ontology file
-manager = OntologyManager("path/to/ontology.ttl")
+# Initialize with the sample ontology file
+manager = OntologyManager(ONTOLOGY_PATH)
 
 # Load and materialize inferences
 await manager.load_and_materialize()
 
-# Execute a SPARQL query
+# Get statistics about the sample ontology
+stats = manager.get_ontology_statistics()
+print(f"Classes: {stats['statistics']['total_classes']}")
+print(f"Individuals: {stats['statistics']['total_individuals']}")
+print(f"Properties: {stats['statistics']['total_properties']}")
+
+# Execute a SPARQL query against the sample ontology
 results = await manager.execute_sparql("""
-    PREFIX : <http://example.org/ontology#>
-    SELECT ?entity ?label
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?class ?label
     WHERE {
-        ?entity a :SomeClass ;
-                rdfs:label ?label .
+        ?class a owl:Class ;
+              rdfs:label ?label .
     }
 """)
+
+# Extract schema relevant to a query using the sample ontology
+schema = await extract_relevant_schema("What are the properties of Class1?", ONTOLOGY_PATH)
 ```
 
-### Adaptive Retrieval Configuration
+### Working with Knowledge Bases
+
+Ragatanga can use text knowledge bases in addition to ontologies:
 
 ```python
-from ragatanga.core.retrieval import AdaptiveRetriever
+from ragatanga.core.semantic import SemanticSearch
+from ragatanga.config import KNOWLEDGE_BASE_PATH
 
-# Initialize with custom base parameters
-retriever = AdaptiveRetriever(
-    ontology_manager,
-    base_top_k=15  # Adjust base number of results
-)
+# Initialize semantic search
+semantic_search = SemanticSearch()
 
-# The retriever automatically adapts parameters based on query type and complexity
-results, scores = await retriever.retrieve("What's the difference between Plan A and Plan B?")
+# Load the sample knowledge base file
+await semantic_search.load_knowledge_base(KNOWLEDGE_BASE_PATH)
+
+# Search the sample knowledge base for information
+results = await semantic_search.search("What information is available about sample topics?", k=5)
+
+# Search with similarity scores
+results, scores = await semantic_search.search_with_scores("Tell me about the sample classes", k=5)
+
+# Print the results
+for i, (text, score) in enumerate(zip(results, scores)):
+    print(f"Result {i+1} (Confidence: {score:.2f}):")
+    print(f"{text}\n")
 ```
 
 ## Knowledge Base Format
