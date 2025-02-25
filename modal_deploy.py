@@ -16,17 +16,26 @@ app = modal.App("ragatanga")
 image = (modal.Image.debian_slim()
     .apt_install("default-jre")  # Add Java Runtime Environment
     .pip_install(
-        "fastapi",
-        "uvicorn",
-        "aiofiles",
-        "faiss-cpu",
-        "instructor",
-        "numpy",
-        "openai",
-        "owlready2",
-        "rdflib",
-        "pydantic",
-        "loguru"
+        "aiofiles>=24.1.0",
+        "instructor>=1.7.2",
+        "faiss-cpu>=1.7.4",
+        "numpy>=1.22.0",
+        "openai>=1.0.0",
+        "uvicorn>=0.34.0",
+        "fastapi>=0.100.0",
+        "rdflib>=6.0.0",
+        "owlready2>=0.47",
+        "python-multipart>=0.0.20",
+        "loguru>=0.7.0",
+        "pydantic>=2.0.0",
+        "sentence-transformers>=2.2.2",
+        "anthropic>=0.18.0",
+        "httpx>=0.24.0",
+        "googletrans>=4.0.0-rc1",
+        "transformers>=4.30.0",
+        "torch>=2.0.0",
+        "requests>=2.28.0",
+        "aiohttp>=3.8.0"
     )
     .add_local_dir("ragatanga", "/root/ragatanga")  # Copy entire ragatanga directory
 )
@@ -37,7 +46,11 @@ volume = modal.Volume.from_name("kb_data")
 @app.function(
     image=image,
     volumes={"/root/data": volume},  # Mount volume at /root/data
-    secrets=[modal.Secret.from_name("openai-secret")],
+    secrets=[
+        modal.Secret.from_name("openai-secret"),
+        modal.Secret.from_name("anthropic-secret"),
+        modal.Secret.from_name("huggingface-secret")
+    ],
     timeout=600
 )
 @modal.asgi_app()
