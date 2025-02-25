@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from ragatanga._version import version as VERSION
 
 # Get the base directory of the project
 BASE_DIR = Path(__file__).resolve().parent
@@ -21,3 +22,14 @@ CHUNK_OVERLAP = 200
 # Question answering configuration
 MAX_TOKENS = 8000
 TEMPERATURE = 0.7 
+
+# Embedding configuration
+EMBED_MODEL = "text-embedding-3-large"
+BATCH_SIZE = 16
+DIMENSIONS = 3072
+
+# LLM configuration
+DEFAULT_LLM_MODEL = "gpt-4o"
+
+# API configuration
+DEFAULT_PORT = 8000

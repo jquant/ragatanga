@@ -1,99 +1,227 @@
-# Ragatanga - Semantic Knowledge Base and Query System
+# Ragatanga
 
-A sophisticated system that combines ontology-based reasoning with semantic search capabilities to provide intelligent query responses. The system uses a hybrid approach, leveraging both SPARQL queries against an OWL ontology and semantic similarity search over a knowledge base.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Ragatanga is a hybrid retrieval system that combines ontology-based reasoning with semantic search for powerful knowledge retrieval.
 
 ## Features
 
-- 🧠 Hybrid query processing combining ontological reasoning and semantic search
-- 🔍 SPARQL query generation from natural language
-- 📚 Knowledge base management with semantic embeddings
-- 🌐 RESTful API endpoints for querying and knowledge management
-- 🔄 Automatic inference materialization
-- 📊 Vector similarity search using FAISS
-
-## Prerequisites
-
-- Python 3.8+
-- OpenAI API key for semantic processing
-- FastAPI for the web API
-- FAISS for efficient similarity search
-- Owlready2 for ontology management
+- **💪 Hybrid Retrieval**: Combines SPARQL queries against an ontology with semantic search for comprehensive knowledge retrieval
+- **🧠 Adaptive Parameters**: Dynamically adjusts retrieval parameters based on query complexity and type
+- **🔄 Multiple Embedding Providers**: Support for OpenAI, HuggingFace, and Sentence Transformers embeddings
+- **💬 Multiple LLM Providers**: Support for OpenAI, HuggingFace, Ollama, and Anthropic LLMs
+- **🌐 Comprehensive API**: FastAPI endpoints for querying and managing knowledge
+- **📊 Confidence Scoring**: Ranks results with confidence scores for higher quality answers
 
 ## Installation
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/jquant/ragatanga.git
+# Install from PyPI
+pip install ragatanga
+
+# Install from source
+git clone https://github.com/yourusername/ragatanga.git
 cd ragatanga
+pip install -e .
 ```
 
-2. Install dependencies:
+## Quick Start
+
+```python
+import asyncio
+from ragatanga.core.ontology import OntologyManager
+from ragatanga.core.retrieval import AdaptiveRetriever
+from ragatanga.core.query import generate_structured_answer
+
+async def main():
+    # Initialize ontology manager
+    ontology_manager = OntologyManager("path/to/ontology.ttl")
+    await ontology_manager.load_and_materialize()
+    
+    # Initialize adaptive retriever
+    retriever = AdaptiveRetriever(ontology_manager)
+    
+    # Retrieve information for a query
+    query = "What units are in Belo Horizonte?"
+    retrieved_texts, confidence_scores = await retriever.retrieve(query)
+    
+    # Generate an answer
+    answer = await generate_structured_answer(query, retrieved_texts, confidence_scores)
+    
+    # Print the answer
+    print(answer.answer)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## API Usage
+
+Start the API server:
+
 ```bash
-pip install -r requirements.txt
+python -m ragatanga.main
 ```
 
-3. Set up your environment variables:
-```bash
-export OPENAI_API_KEY='your-api-key'
-```
+Then, query the API:
 
-## Project Structure
-
-- `main.py` - Core application with FastAPI endpoints and query processing
-- `modal_deploy.py` - Modal deployment configuration
-- `setup_volume.py` - Volume setup for deployment
-- `ontology.ttl` - Main ontology file
-- `knowledge_base.md` - Knowledge base content
-
-## API Endpoints
-
-- `POST /query` - Process hybrid queries using ontology and semantic search
-- `POST /upload/ontology` - Upload a new ontology file
-- `GET /download/ontology` - Download the current ontology
-- `POST /upload/kb` - Upload a new knowledge base
-- `GET /download/kb` - Download the current knowledge base
-- `GET /describe_ontology` - Get statistics and information about the ontology
-
-## Usage
-
-1. Start the server:
-```bash
-uvicorn main:app --reload
-```
-
-2. Send queries using the API:
 ```bash
 curl -X POST "http://localhost:8000/query" \
      -H "Content-Type: application/json" \
-     -d '{"query": "What are the key concepts in the knowledge base?"}'
+     -d '{"query": "What units are in Belo Horizonte?"}'
 ```
 
-## Deployment
+### API Endpoints
 
-The project is configured for deployment using Modal. To deploy:
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/query` | POST | Process a natural language query |
+| `/upload/ontology` | POST | Upload a new ontology file |
+| `/download/ontology` | GET | Download the current ontology file |
+| `/upload/kb` | POST | Upload a new knowledge base file |
+| `/download/kb` | GET | Download the current knowledge base |
+| `/describe_ontology` | GET | Get detailed statistics about the ontology |
 
-```bash
-modal deploy modal_deploy.py
-```
+## Configuration
+
+Ragatanga can be configured through environment variables:
+
+- `OPENAI_API_KEY`: Your OpenAI API key (required for OpenAI providers)
+- `ANTHROPIC_API_KEY`: Your Anthropic API key (required for Anthropic provider)
+- `HF_API_KEY`: Your HuggingFace API key (required for HuggingFace API)
+- `EMBEDDING_PROVIDER`: Embedding provider to use (openai, huggingface, sentence-transformers)
+- `LLM_PROVIDER`: LLM provider to use (openai, huggingface, ollama, anthropic)
 
 ## Architecture
 
-The system uses a hybrid approach for query processing:
+Ragatanga's modular architecture includes:
 
-1. **Ontological Reasoning**
-   - Uses OWL ontology for structured knowledge
-   - Generates SPARQL queries from natural language
-   - Materializes inferences for complete reasoning
+- **Core**: Core functionality for ontology management, retrieval, and query processing
+  - `ontology.py`: Ontology loading, inference, and SPARQL query execution
+  - `semantic.py`: Semantic search using vector embeddings
+  - `retrieval.py`: Hybrid retrieval combining ontology and semantic search
+  - `query.py`: Query analysis and answer generation
+  - `llm.py`: Abstraction for different LLM providers
 
-2. **Semantic Search**
-   - Embeds knowledge base content using OpenAI embeddings
-   - Uses FAISS for efficient similarity search
-   - Combines results with ontological queries
+- **API**: FastAPI application and endpoints
+  - `app.py`: FastAPI application and lifecycle management
+  - `routes.py`: API endpoint definitions
+  - `models.py`: Pydantic models for request/response validation
 
-3. **Result Generation**
-   - Merges results from both approaches
-   - Generates natural language responses
-   - Provides context-aware answers
+- **Utils**: Utility functions for embeddings and SPARQL
+  - `embeddings.py`: Embedding providers and utilities
+  - `sparql.py`: SPARQL query generation and utilities
+
+## Advanced Usage
+
+### Using Different Embedding Providers
+
+```python
+from ragatanga.utils.embeddings import EmbeddingProvider
+
+# Get a specific provider
+embed_provider = EmbeddingProvider.get_provider("sentence-transformers")
+
+# Embed a query
+query_embedding = await embed_provider.embed_query("What units are in Belo Horizonte?")
+```
+
+Available embedding providers:
+- `openai`: OpenAI's text-embedding models
+- `huggingface`: HuggingFace's embedding models
+- `sentence-transformers`: SentenceTransformers embedding models
+
+### Using Different LLM Providers
+
+```python
+from ragatanga.core.llm import LLMProvider
+
+# Get a specific provider
+llm_provider = LLMProvider.get_provider("huggingface", model="mistralai/Mistral-7B-Instruct-v0.2")
+
+# Generate text
+response = await llm_provider.generate_text(
+    prompt="What are the benefits of regular exercise?",
+    system_prompt="You are a fitness expert."
+)
+```
+
+Available LLM providers:
+- `openai`: OpenAI's GPT models
+- `huggingface`: HuggingFace's language models (API or local)
+- `ollama`: Local models via Ollama
+- `anthropic`: Anthropic's Claude models
+
+### Customizing Ontology Management
+
+```python
+from ragatanga.core.ontology import OntologyManager
+
+# Initialize with an ontology file
+manager = OntologyManager("path/to/ontology.ttl")
+
+# Load and materialize inferences
+await manager.load_and_materialize()
+
+# Execute a SPARQL query
+results = await manager.execute_sparql("""
+    PREFIX : <http://example.org/ontology#>
+    SELECT ?entity ?label
+    WHERE {
+        ?entity a :SomeClass ;
+                rdfs:label ?label .
+    }
+""")
+```
+
+### Adaptive Retrieval Configuration
+
+```python
+from ragatanga.core.retrieval import AdaptiveRetriever
+
+# Initialize with custom base parameters
+retriever = AdaptiveRetriever(
+    ontology_manager,
+    base_top_k=15  # Adjust base number of results
+)
+
+# The retriever automatically adapts parameters based on query type and complexity
+results, scores = await retriever.retrieve("What's the difference between Plan A and Plan B?")
+```
+
+## Knowledge Base Format
+
+Ragatanga accepts knowledge base files in markdown format, with entries separated by blank lines:
+
+```markdown
+# Entity Name 1
+
+This is information about Entity 1. The system will chunk this
+content for retrieval later.
+
+# Entity Name 2
+
+This is information about Entity 2. Each chunk will be embedded
+and retrievable through semantic search.
+```
+
+## Ontology Format
+
+Ragatanga works with OWL/RDF ontologies in Turtle (.ttl) format:
+
+```turtle
+@prefix : <http://example.org/ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+:Entity1 rdf:type owl:Class ;
+         rdfs:label "Entity 1" .
+
+:property1 rdf:type owl:ObjectProperty ;
+           rdfs:domain :Entity1 ;
+           rdfs:range :Entity2 .
+```
 
 ## Contributing
 
@@ -101,12 +229,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT License
-
-Copyright (c) 2024 Ragatanga
-
-See the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For questions and support, please open an issue on the GitHub repository.
+This project is licensed under the MIT License - see the LICENSE file for details.
