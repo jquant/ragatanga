@@ -1,7 +1,7 @@
 # Ragatanga
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.3.1-blue.svg)](https://github.com/jquant/ragatanga/releases/tag/v0.3.1)
+[![Version](https://img.shields.io/badge/version-0.3.2-blue.svg)](https://github.com/jquant/ragatanga/releases/tag/v0.3.2)
 [![PyPI](https://img.shields.io/pypi/v/ragatanga.svg)](https://pypi.org/project/ragatanga/)
 [![Documentation](https://img.shields.io/badge/documentation-online-green.svg)](https://jquant.github.io/ragatanga/)
 
